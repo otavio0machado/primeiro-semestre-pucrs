@@ -1,0 +1,62 @@
+[
+  {
+    "id": "calc1-mod1-funcoes",
+    "disciplineId": "calculo-1",
+    "name": "Funções",
+    "order": 1,
+    "description": "Estudo completo de funções de uma variável: definição, domínio, representações, tipos de funções e transformações gráficas.",
+    "assessmentIds": ["calc1-p1", "calc1-t1"],
+    "startDate": "2026-03-03",
+    "endDate": "2026-04-07"
+  },
+  {
+    "id": "calc1-mod2-limites",
+    "disciplineId": "calculo-1",
+    "name": "Limites e Continuidade",
+    "order": 2,
+    "description": "Noção intuitiva de limite, limites laterais, bilateral, cálculo de limites, limites infinitos, limites no infinito, assíntotas e continuidade.",
+    "assessmentIds": ["calc1-p2", "calc1-t2"],
+    "startDate": "2026-04-23",
+    "endDate": "2026-05-26"
+  },
+  {
+    "id": "calc1-mod3-derivadas",
+    "disciplineId": "calculo-1",
+    "name": "Derivadas e Aplicações",
+    "order": 3,
+    "description": "Definição de derivada, regras de derivação, derivadas sucessivas, aplicações: L'Hôpital, análise de funções (crescimento, extremos, concavidade, inflexão), otimização e derivação implícita.",
+    "assessmentIds": ["calc1-p3", "calc1-t3"],
+    "startDate": "2026-05-07",
+    "endDate": "2026-06-25"
+  },
+  {
+    "id": "md-mod1-conjuntos-logica",
+    "disciplineId": "mat-discreta",
+    "name": "Conjuntos e Lógica Proposicional",
+    "order": 1,
+    "description": "Teoria dos conjuntos (definição, representação, conjuntos numéricos, intervalos), relações e operações entre conjuntos, lógica proposicional (conectivos, tabelas-verdade, quantificadores, demonstrações).",
+    "assessmentIds": ["md-p1", "md-t1"],
+    "startDate": "2026-03-02",
+    "endDate": "2026-04-06"
+  },
+  {
+    "id": "md-mod2-relacoes-funcoes",
+    "disciplineId": "mat-discreta",
+    "name": "Relações e Funções",
+    "order": 2,
+    "description": "Relações entre dois conjuntos (definição, domínio, imagem, contradomínio, representação gráfica), operações com relações, tipos de relações, funções como relações, funções parciais e totais, função inversível.",
+    "assessmentIds": ["md-p2", "md-t2"],
+    "startDate": "2026-04-13",
+    "endDate": "2026-05-18"
+  },
+  {
+    "id": "md-mod3-ordem-inducao-boole",
+    "disciplineId": "mat-discreta",
+    "name": "Ordem, Indução e Álgebra Booleana",
+    "order": 3,
+    "description": "Relação em um conjunto, relação de equivalência, relação de ordem (parcial e total), diagrama de Hasse, elementos notáveis, reticulados, álgebra Booleana, recursão, somatórios e indução matemática.",
+    "assessmentIds": ["md-p3", "md-t3", "md-t4"],
+    "startDate": "2026-05-25",
+    "endDate": "2026-06-24"
+  }
+]

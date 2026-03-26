@@ -1,0 +1,483 @@
+[
+  {
+    "id": "calc1-t01-conceito-funcao",
+    "moduleId": "calc1-mod1-funcoes",
+    "name": "Conceito de Função e Representações",
+    "order": 1,
+    "classNumbers": [1, 3],
+    "documentRefs": ["doc-calc1-funcoes-material", "doc-calc1-lista-funcoes", "doc-calc1-livro-anton"],
+    "subtopics": [
+      { "id": "calc1-t01-s01", "topicId": "calc1-t01-conceito-funcao", "name": "Noção intuitiva de função", "order": 1, "description": "Conceito informal de função como máquina de entrada/saída, relação entre variáveis dependente e independente." },
+      { "id": "calc1-t01-s02", "topicId": "calc1-t01-conceito-funcao", "name": "Definição formal de função", "order": 2, "description": "Definição como relação entre conjuntos com unicidade na imagem. Domínio, contradomínio e imagem." },
+      { "id": "calc1-t01-s03", "topicId": "calc1-t01-conceito-funcao", "name": "Formas de representação", "order": 3, "description": "Representação algébrica, tabular, gráfica e por diagrama de flechas." }
+    ],
+    "microcompetencies": [
+      { "id": "calc1-mc001", "topicId": "calc1-t01-conceito-funcao", "description": "Identificar se uma relação é ou não uma função", "bloomLevel": 2, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "calc1-mc002", "topicId": "calc1-t01-conceito-funcao", "description": "Determinar domínio, contradomínio e imagem de uma função dada", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "calc1-mc003", "topicId": "calc1-t01-conceito-funcao", "description": "Representar uma função por diferentes formas (gráfico, tabela, expressão)", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "calc1-t02-dominio",
+    "moduleId": "calc1-mod1-funcoes",
+    "name": "Determinação de Domínio",
+    "order": 2,
+    "classNumbers": [3, 4],
+    "documentRefs": ["doc-calc1-funcoes-material", "doc-calc1-lista-funcoes", "doc-calc1-livro-anton"],
+    "subtopics": [
+      { "id": "calc1-t02-s01", "topicId": "calc1-t02-dominio", "name": "Domínio de funções racionais", "order": 1, "description": "Restrições de denominador zero." },
+      { "id": "calc1-t02-s02", "topicId": "calc1-t02-dominio", "name": "Domínio de funções irracionais", "order": 2, "description": "Restrições de radicando negativo em raízes pares." },
+      { "id": "calc1-t02-s03", "topicId": "calc1-t02-dominio", "name": "Domínio de funções logarítmicas", "order": 3, "description": "Restrição de logaritmando positivo." },
+      { "id": "calc1-t02-s04", "topicId": "calc1-t02-dominio", "name": "Domínio de funções compostas", "order": 4, "description": "Interseção das condições de existência." }
+    ],
+    "microcompetencies": [
+      { "id": "calc1-mc004", "topicId": "calc1-t02-dominio", "description": "Determinar o domínio de funções polinomiais, racionais e irracionais", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "calc1-mc005", "topicId": "calc1-t02-dominio", "description": "Determinar o domínio de funções logarítmicas e compostas", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "calc1-t03-funcao-afim-quadratica",
+    "moduleId": "calc1-mod1-funcoes",
+    "name": "Função Afim e Quadrática",
+    "order": 3,
+    "classNumbers": [4, 5],
+    "documentRefs": ["doc-calc1-funcoes-material", "doc-calc1-lista-funcoes", "doc-calc1-livro-anton"],
+    "subtopics": [
+      { "id": "calc1-t03-s01", "topicId": "calc1-t03-funcao-afim-quadratica", "name": "Função afim (1o grau)", "order": 1, "description": "f(x) = ax + b. Coeficiente angular, linear, gráfico como reta, crescimento/decrescimento." },
+      { "id": "calc1-t03-s02", "topicId": "calc1-t03-funcao-afim-quadratica", "name": "Função quadrática (2o grau)", "order": 2, "description": "f(x) = ax² + bx + c. Parábola, vértice, discriminante, raízes, concavidade." }
+    ],
+    "microcompetencies": [
+      { "id": "calc1-mc006", "topicId": "calc1-t03-funcao-afim-quadratica", "description": "Esboçar e analisar gráfico de função afim", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "calc1-mc007", "topicId": "calc1-t03-funcao-afim-quadratica", "description": "Esboçar e analisar gráfico de função quadrática (vértice, raízes, concavidade)", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "calc1-t04-operacoes-composicao",
+    "moduleId": "calc1-mod1-funcoes",
+    "name": "Operações com Funções e Composição",
+    "order": 4,
+    "classNumbers": [6],
+    "documentRefs": ["doc-calc1-funcoes-material", "doc-calc1-lista-funcoes", "doc-calc1-livro-anton"],
+    "subtopics": [
+      { "id": "calc1-t04-s01", "topicId": "calc1-t04-operacoes-composicao", "name": "Soma, diferença, produto e quociente de funções", "order": 1, "description": "Operações algébricas entre funções e seus domínios resultantes." },
+      { "id": "calc1-t04-s02", "topicId": "calc1-t04-operacoes-composicao", "name": "Função composta (f∘g)", "order": 2, "description": "Composição de funções, domínio da composta, ordem importa." }
+    ],
+    "microcompetencies": [
+      { "id": "calc1-mc008", "topicId": "calc1-t04-operacoes-composicao", "description": "Realizar operações algébricas entre funções e determinar domínio resultante", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "calc1-mc009", "topicId": "calc1-t04-operacoes-composicao", "description": "Calcular e analisar funções compostas (f∘g e g∘f)", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "calc1-t05-funcoes-importantes",
+    "moduleId": "calc1-mod1-funcoes",
+    "name": "Funções Importantes e Movimentos Gráficos",
+    "order": 5,
+    "classNumbers": [6, 7],
+    "documentRefs": ["doc-calc1-funcoes-material", "doc-calc1-lista-funcoes", "doc-calc1-livro-anton"],
+    "subtopics": [
+      { "id": "calc1-t05-s01", "topicId": "calc1-t05-funcoes-importantes", "name": "Funções potência, modular, definida por partes", "order": 1, "description": "Gráficos e propriedades de funções elementares importantes." },
+      { "id": "calc1-t05-s02", "topicId": "calc1-t05-funcoes-importantes", "name": "Translações horizontais e verticais", "order": 2, "description": "f(x) + k, f(x - h): deslocamentos no gráfico." },
+      { "id": "calc1-t05-s03", "topicId": "calc1-t05-funcoes-importantes", "name": "Reflexões e dilatações", "order": 3, "description": "-f(x), f(-x), af(x), f(bx): reflexões nos eixos e mudanças de escala." }
+    ],
+    "microcompetencies": [
+      { "id": "calc1-mc010", "topicId": "calc1-t05-funcoes-importantes", "description": "Reconhecer e esboçar gráficos de funções elementares (modular, potência, partes)", "bloomLevel": 2, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "calc1-mc011", "topicId": "calc1-t05-funcoes-importantes", "description": "Aplicar transformações gráficas (translação, reflexão, dilatação) a funções conhecidas", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "calc1-t06-trigonometricas",
+    "moduleId": "calc1-mod1-funcoes",
+    "name": "Funções Trigonométricas",
+    "order": 6,
+    "classNumbers": [8],
+    "documentRefs": ["doc-calc1-funcoes-material", "doc-calc1-livro-anton"],
+    "subtopics": [
+      { "id": "calc1-t06-s01", "topicId": "calc1-t06-trigonometricas", "name": "Seno, cosseno e tangente", "order": 1, "description": "Definição, gráfico, período, amplitude, domínio e imagem." },
+      { "id": "calc1-t06-s02", "topicId": "calc1-t06-trigonometricas", "name": "Transformações em funções trigonométricas", "order": 2, "description": "Mudanças de período, amplitude e fase." }
+    ],
+    "microcompetencies": [
+      { "id": "calc1-mc012", "topicId": "calc1-t06-trigonometricas", "description": "Esboçar e analisar gráficos de sen(x), cos(x), tan(x) e suas transformações", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "calc1-t07-inversa-exp-log",
+    "moduleId": "calc1-mod1-funcoes",
+    "name": "Função Inversa, Exponencial e Logarítmica",
+    "order": 7,
+    "classNumbers": [9],
+    "documentRefs": ["doc-calc1-funcoes-material", "doc-calc1-livro-anton"],
+    "subtopics": [
+      { "id": "calc1-t07-s01", "topicId": "calc1-t07-inversa-exp-log", "name": "Função inversa", "order": 1, "description": "Conceito de inversibilidade, condição de bijeção, gráfico como reflexão em y=x." },
+      { "id": "calc1-t07-s02", "topicId": "calc1-t07-inversa-exp-log", "name": "Função exponencial", "order": 2, "description": "f(x) = aˣ, propriedades, gráfico, crescimento/decrescimento." },
+      { "id": "calc1-t07-s03", "topicId": "calc1-t07-inversa-exp-log", "name": "Função logarítmica", "order": 3, "description": "f(x) = log_a(x), propriedades, gráfico, relação com exponencial." }
+    ],
+    "microcompetencies": [
+      { "id": "calc1-mc013", "topicId": "calc1-t07-inversa-exp-log", "description": "Determinar a inversa de uma função e representá-la graficamente", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "calc1-mc014", "topicId": "calc1-t07-inversa-exp-log", "description": "Esboçar e analisar funções exponenciais e logarítmicas", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "calc1-t08-limites-conceito",
+    "moduleId": "calc1-mod2-limites",
+    "name": "Conceito de Limite e Continuidade",
+    "order": 1,
+    "classNumbers": [14],
+    "documentRefs": ["doc-calc1-livro-anton"],
+    "subtopics": [
+      { "id": "calc1-t08-s01", "topicId": "calc1-t08-limites-conceito", "name": "Noção intuitiva de limite", "order": 1, "description": "Comportamento de f(x) quando x se aproxima de um ponto." },
+      { "id": "calc1-t08-s02", "topicId": "calc1-t08-limites-conceito", "name": "Limites laterais", "order": 2, "description": "Limites à esquerda e à direita. Existência do limite bilateral." },
+      { "id": "calc1-t08-s03", "topicId": "calc1-t08-limites-conceito", "name": "Continuidade", "order": 3, "description": "Definição de continuidade em um ponto. Tipos de descontinuidade." }
+    ],
+    "microcompetencies": [
+      { "id": "calc1-mc015", "topicId": "calc1-t08-limites-conceito", "description": "Calcular limites laterais e verificar existência do limite bilateral", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "calc1-mc016", "topicId": "calc1-t08-limites-conceito", "description": "Verificar continuidade de uma função em um ponto", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "calc1-t09-calculo-limites",
+    "moduleId": "calc1-mod2-limites",
+    "name": "Cálculo de Limites",
+    "order": 2,
+    "classNumbers": [15, 17],
+    "documentRefs": ["doc-calc1-livro-anton"],
+    "subtopics": [
+      { "id": "calc1-t09-s01", "topicId": "calc1-t09-calculo-limites", "name": "Propriedades de limites", "order": 1, "description": "Limite da soma, produto, quociente, potência." },
+      { "id": "calc1-t09-s02", "topicId": "calc1-t09-calculo-limites", "name": "Limites por substituição direta", "order": 2, "description": "Quando f é contínua no ponto." },
+      { "id": "calc1-t09-s03", "topicId": "calc1-t09-calculo-limites", "name": "Limites indeterminados (0/0)", "order": 3, "description": "Fatoração, racionalização, simplificação algébrica." },
+      { "id": "calc1-t09-s04", "topicId": "calc1-t09-calculo-limites", "name": "Limites trigonométricos fundamentais", "order": 4, "description": "lim sen(x)/x = 1 e variações." }
+    ],
+    "microcompetencies": [
+      { "id": "calc1-mc017", "topicId": "calc1-t09-calculo-limites", "description": "Calcular limites usando propriedades algébricas e substituição", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "calc1-mc018", "topicId": "calc1-t09-calculo-limites", "description": "Resolver indeterminações 0/0 por fatoração e racionalização", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "calc1-t10-limites-infinito",
+    "moduleId": "calc1-mod2-limites",
+    "name": "Limites Infinitos, no Infinito e Assíntotas",
+    "order": 3,
+    "classNumbers": [16],
+    "documentRefs": ["doc-calc1-livro-anton"],
+    "subtopics": [
+      { "id": "calc1-t10-s01", "topicId": "calc1-t10-limites-infinito", "name": "Limites infinitos (±∞)", "order": 1, "description": "Quando f(x) cresce sem limite. Assíntotas verticais." },
+      { "id": "calc1-t10-s02", "topicId": "calc1-t10-limites-infinito", "name": "Limites no infinito", "order": 2, "description": "Comportamento de f(x) quando x → ±∞. Assíntotas horizontais." },
+      { "id": "calc1-t10-s03", "topicId": "calc1-t10-limites-infinito", "name": "Assíntotas verticais e horizontais", "order": 3, "description": "Determinação de assíntotas a partir de limites." }
+    ],
+    "microcompetencies": [
+      { "id": "calc1-mc019", "topicId": "calc1-t10-limites-infinito", "description": "Calcular limites infinitos e limites no infinito", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "calc1-mc020", "topicId": "calc1-t10-limites-infinito", "description": "Determinar assíntotas verticais e horizontais de uma função", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "calc1-t11-definicao-derivada",
+    "moduleId": "calc1-mod3-derivadas",
+    "name": "Definição de Derivada",
+    "order": 1,
+    "classNumbers": [18],
+    "documentRefs": ["doc-calc1-livro-anton"],
+    "subtopics": [
+      { "id": "calc1-t11-s01", "topicId": "calc1-t11-definicao-derivada", "name": "Derivada como limite", "order": 1, "description": "f'(x) = lim [f(x+h)-f(x)]/h quando h→0." },
+      { "id": "calc1-t11-s02", "topicId": "calc1-t11-definicao-derivada", "name": "Interpretação geométrica", "order": 2, "description": "Derivada como coeficiente angular da reta tangente." },
+      { "id": "calc1-t11-s03", "topicId": "calc1-t11-definicao-derivada", "name": "Interpretação como taxa de variação", "order": 3, "description": "Velocidade instantânea e taxa de variação." }
+    ],
+    "microcompetencies": [
+      { "id": "calc1-mc021", "topicId": "calc1-t11-definicao-derivada", "description": "Calcular derivada usando a definição por limite", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "calc1-mc022", "topicId": "calc1-t11-definicao-derivada", "description": "Interpretar a derivada como inclinação da reta tangente e taxa de variação", "bloomLevel": 2, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "calc1-t12-regras-derivacao",
+    "moduleId": "calc1-mod3-derivadas",
+    "name": "Regras de Derivação",
+    "order": 2,
+    "classNumbers": [19, 20, 21],
+    "documentRefs": ["doc-calc1-livro-anton"],
+    "subtopics": [
+      { "id": "calc1-t12-s01", "topicId": "calc1-t12-regras-derivacao", "name": "Regras básicas (constante, potência, soma, produto, quociente)", "order": 1, "description": "Regras fundamentais de derivação." },
+      { "id": "calc1-t12-s02", "topicId": "calc1-t12-regras-derivacao", "name": "Regra da cadeia", "order": 2, "description": "Derivada de funções compostas." },
+      { "id": "calc1-t12-s03", "topicId": "calc1-t12-regras-derivacao", "name": "Derivadas de funções trigonométricas", "order": 3, "description": "Derivadas de sen, cos, tan e variações." },
+      { "id": "calc1-t12-s04", "topicId": "calc1-t12-regras-derivacao", "name": "Derivadas de exponenciais e logarítmicas", "order": 4, "description": "Derivadas de eˣ, aˣ, ln(x), log_a(x)." },
+      { "id": "calc1-t12-s05", "topicId": "calc1-t12-regras-derivacao", "name": "Derivadas sucessivas", "order": 5, "description": "Segunda derivada, n-ésima derivada e interpretações." }
+    ],
+    "microcompetencies": [
+      { "id": "calc1-mc023", "topicId": "calc1-t12-regras-derivacao", "description": "Aplicar regras básicas de derivação (potência, produto, quociente)", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "calc1-mc024", "topicId": "calc1-t12-regras-derivacao", "description": "Aplicar a regra da cadeia em funções compostas", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "calc1-mc025", "topicId": "calc1-t12-regras-derivacao", "description": "Derivar funções trigonométricas, exponenciais e logarítmicas", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "calc1-mc026", "topicId": "calc1-t12-regras-derivacao", "description": "Calcular derivadas de segunda e terceira ordem", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "calc1-t13-lhopital",
+    "moduleId": "calc1-mod3-derivadas",
+    "name": "Regra de L'Hôpital",
+    "order": 3,
+    "classNumbers": [25],
+    "documentRefs": ["doc-calc1-livro-anton"],
+    "subtopics": [
+      { "id": "calc1-t13-s01", "topicId": "calc1-t13-lhopital", "name": "Formas indeterminadas 0/0 e ∞/∞", "order": 1, "description": "Reconhecimento de formas indeterminadas." },
+      { "id": "calc1-t13-s02", "topicId": "calc1-t13-lhopital", "name": "Aplicação da Regra de L'Hôpital", "order": 2, "description": "Derivar numerador e denominador para resolver indeterminações." }
+    ],
+    "microcompetencies": [
+      { "id": "calc1-mc027", "topicId": "calc1-t13-lhopital", "description": "Identificar formas indeterminadas e aplicar a Regra de L'Hôpital", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "calc1-t14-analise-funcao",
+    "moduleId": "calc1-mod3-derivadas",
+    "name": "Análise do Comportamento de Funções",
+    "order": 4,
+    "classNumbers": [26, 27],
+    "documentRefs": ["doc-calc1-livro-anton"],
+    "subtopics": [
+      { "id": "calc1-t14-s01", "topicId": "calc1-t14-analise-funcao", "name": "Pontos críticos", "order": 1, "description": "f'(x)=0 ou f'(x) não existe." },
+      { "id": "calc1-t14-s02", "topicId": "calc1-t14-analise-funcao", "name": "Crescimento e decrescimento", "order": 2, "description": "Teste da primeira derivada: f'>0 crescente, f'<0 decrescente." },
+      { "id": "calc1-t14-s03", "topicId": "calc1-t14-analise-funcao", "name": "Extremos locais (máximos e mínimos)", "order": 3, "description": "Critérios da primeira e segunda derivada para extremos." },
+      { "id": "calc1-t14-s04", "topicId": "calc1-t14-analise-funcao", "name": "Concavidade e pontos de inflexão", "order": 4, "description": "f''>0 concavidade para cima, f''<0 para baixo, f''=0 possível inflexão." }
+    ],
+    "microcompetencies": [
+      { "id": "calc1-mc028", "topicId": "calc1-t14-analise-funcao", "description": "Determinar intervalos de crescimento/decrescimento usando f'", "bloomLevel": 4, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "calc1-mc029", "topicId": "calc1-t14-analise-funcao", "description": "Classificar pontos críticos em máximo, mínimo ou nenhum", "bloomLevel": 4, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "calc1-mc030", "topicId": "calc1-t14-analise-funcao", "description": "Determinar concavidade e pontos de inflexão usando f''", "bloomLevel": 4, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "calc1-t15-otimizacao",
+    "moduleId": "calc1-mod3-derivadas",
+    "name": "Problemas de Otimização",
+    "order": 5,
+    "classNumbers": [28],
+    "documentRefs": ["doc-calc1-livro-anton"],
+    "subtopics": [
+      { "id": "calc1-t15-s01", "topicId": "calc1-t15-otimizacao", "name": "Modelagem de problemas de otimização", "order": 1, "description": "Traduzir enunciado em função objetivo com restrição." },
+      { "id": "calc1-t15-s02", "topicId": "calc1-t15-otimizacao", "name": "Resolução via derivada", "order": 2, "description": "Encontrar extremos absolutos em intervalo fechado." }
+    ],
+    "microcompetencies": [
+      { "id": "calc1-mc031", "topicId": "calc1-t15-otimizacao", "description": "Modelar e resolver problemas de otimização usando derivadas", "bloomLevel": 5, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "calc1-t16-derivacao-implicita",
+    "moduleId": "calc1-mod3-derivadas",
+    "name": "Derivação Implícita",
+    "order": 6,
+    "classNumbers": [29],
+    "documentRefs": ["doc-calc1-livro-anton"],
+    "subtopics": [
+      { "id": "calc1-t16-s01", "topicId": "calc1-t16-derivacao-implicita", "name": "Derivação implícita", "order": 1, "description": "Derivar equações onde y não está explícito em função de x." }
+    ],
+    "microcompetencies": [
+      { "id": "calc1-mc032", "topicId": "calc1-t16-derivacao-implicita", "description": "Calcular dy/dx por derivação implícita", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "md-t01-conjuntos-definicao",
+    "moduleId": "md-mod1-conjuntos-logica",
+    "name": "Conceitos Básicos de Conjuntos",
+    "order": 1,
+    "classNumbers": [2, 3],
+    "documentRefs": ["doc-md-topico1-conceitos", "doc-md-exercicios-conjuntos", "doc-md-livro-menezes"],
+    "subtopics": [
+      { "id": "md-t01-s01", "topicId": "md-t01-conjuntos-definicao", "name": "Definição de conjunto, elemento e pertinência", "order": 1, "description": "Conceito primitivo de conjunto, notação de pertinência (∈, ∉)." },
+      { "id": "md-t01-s02", "topicId": "md-t01-conjuntos-definicao", "name": "Formas de representação", "order": 2, "description": "Por extensão, compreensão, diagrama de Venn, gráfico." },
+      { "id": "md-t01-s03", "topicId": "md-t01-conjuntos-definicao", "name": "Conjunto vazio e conjunto universo", "order": 3, "description": "∅ e U: definições e propriedades fundamentais." },
+      { "id": "md-t01-s04", "topicId": "md-t01-conjuntos-definicao", "name": "Conjuntos numéricos (N, Z, Q, I, R)", "order": 4, "description": "Hierarquia N ⊂ Z ⊂ Q ⊂ R, números irracionais, reta real." },
+      { "id": "md-t01-s05", "topicId": "md-t01-conjuntos-definicao", "name": "Intervalos", "order": 5, "description": "Abertos, fechados, semiabertos, infinitos. Notação e representação na reta." }
+    ],
+    "microcompetencies": [
+      { "id": "md-mc001", "topicId": "md-t01-conjuntos-definicao", "description": "Representar conjuntos por extensão e compreensão", "bloomLevel": 2, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "md-mc002", "topicId": "md-t01-conjuntos-definicao", "description": "Classificar elementos como pertencentes ou não a conjuntos numéricos", "bloomLevel": 2, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "md-mc003", "topicId": "md-t01-conjuntos-definicao", "description": "Representar e operar com intervalos na reta real", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "md-t02-relacoes-operacoes-conjuntos",
+    "moduleId": "md-mod1-conjuntos-logica",
+    "name": "Relações e Operações entre Conjuntos",
+    "order": 2,
+    "classNumbers": [3, 4],
+    "documentRefs": ["doc-md-topico3-relacoes-operacoes", "doc-md-exercicios-conjuntos", "doc-md-livro-menezes"],
+    "subtopics": [
+      { "id": "md-t02-s01", "topicId": "md-t02-relacoes-operacoes-conjuntos", "name": "Inclusão (⊆) e inclusão estrita (⊂)", "order": 1, "description": "Definição formal com quantificadores, propriedades (reflexiva, transitiva)." },
+      { "id": "md-t02-s02", "topicId": "md-t02-relacoes-operacoes-conjuntos", "name": "Igualdade de conjuntos", "order": 2, "description": "A=B ⟺ A⊆B ∧ B⊆A." },
+      { "id": "md-t02-s03", "topicId": "md-t02-relacoes-operacoes-conjuntos", "name": "União, interseção, diferença", "order": 3, "description": "Definição formal, diagramas de Venn, propriedades algébricas." },
+      { "id": "md-t02-s04", "topicId": "md-t02-relacoes-operacoes-conjuntos", "name": "Complementação e Leis de De Morgan", "order": 4, "description": "(A∪B)'=A'∩B' e (A∩B)'=A'∪B'." },
+      { "id": "md-t02-s05", "topicId": "md-t02-relacoes-operacoes-conjuntos", "name": "Conjunto das partes e produto cartesiano", "order": 5, "description": "P(A), |P(A)|=2ⁿ. A×B = {(x,y) | x∈A ∧ y∈B}." }
+    ],
+    "microcompetencies": [
+      { "id": "md-mc004", "topicId": "md-t02-relacoes-operacoes-conjuntos", "description": "Verificar relações de inclusão e igualdade entre conjuntos", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "md-mc005", "topicId": "md-t02-relacoes-operacoes-conjuntos", "description": "Calcular união, interseção, diferença e complemento", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "md-mc006", "topicId": "md-t02-relacoes-operacoes-conjuntos", "description": "Aplicar Leis de De Morgan e propriedades algébricas de conjuntos", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "md-mc007", "topicId": "md-t02-relacoes-operacoes-conjuntos", "description": "Determinar conjunto das partes e produto cartesiano", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "md-t03-logica-proposicional",
+    "moduleId": "md-mod1-conjuntos-logica",
+    "name": "Lógica Proposicional",
+    "order": 3,
+    "classNumbers": [5, 6],
+    "documentRefs": ["doc-md-topico2-logica", "doc-md-topico2-exemplos-tv", "doc-md-topico2-linguagem", "doc-md-livro-menezes"],
+    "subtopics": [
+      { "id": "md-t03-s01", "topicId": "md-t03-logica-proposicional", "name": "Proposições e valores lógicos", "order": 1, "description": "Definição de proposição, V e F, funções proposicionais." },
+      { "id": "md-t03-s02", "topicId": "md-t03-logica-proposicional", "name": "Operadores lógicos (¬, ∧, ∨, →, ↔)", "order": 2, "description": "Negação, conjunção, disjunção, condicional, bicondicional. Tabelas-verdade." },
+      { "id": "md-t03-s03", "topicId": "md-t03-logica-proposicional", "name": "Tabelas-verdade completas", "order": 3, "description": "Construção com 2ⁿ linhas, classificação: tautologia, contradição, contingência." },
+      { "id": "md-t03-s04", "topicId": "md-t03-logica-proposicional", "name": "Implicação e equivalência lógica", "order": 4, "description": "p⇒q (tautologia no condicional), p⇔q (tautologia no bicondicional)." },
+      { "id": "md-t03-s05", "topicId": "md-t03-logica-proposicional", "name": "Precedência de operadores", "order": 5, "description": "¬ > ∧/∨ > →/↔ > ⇒/⇔. Uso de parênteses." },
+      { "id": "md-t03-s06", "topicId": "md-t03-logica-proposicional", "name": "Portas lógicas (AND, OR, NOT)", "order": 6, "description": "Relação com circuitos digitais. Álgebra Booleana introdutória." }
+    ],
+    "microcompetencies": [
+      { "id": "md-mc008", "topicId": "md-t03-logica-proposicional", "description": "Identificar proposições e atribuir valores lógicos", "bloomLevel": 2, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "md-mc009", "topicId": "md-t03-logica-proposicional", "description": "Construir tabelas-verdade para proposições compostas", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "md-mc010", "topicId": "md-t03-logica-proposicional", "description": "Classificar proposições como tautologia, contradição ou contingência", "bloomLevel": 4, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "md-mc011", "topicId": "md-t03-logica-proposicional", "description": "Verificar implicações e equivalências lógicas via tabela-verdade", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "md-mc012", "topicId": "md-t03-logica-proposicional", "description": "Traduzir sentenças da linguagem natural para notação lógica corretamente", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "md-t04-quantificadores",
+    "moduleId": "md-mod1-conjuntos-logica",
+    "name": "Quantificadores e Demonstrações",
+    "order": 4,
+    "classNumbers": [7, 8],
+    "documentRefs": ["doc-md-topico2-logica", "doc-md-livro-menezes"],
+    "subtopics": [
+      { "id": "md-t04-s01", "topicId": "md-t04-quantificadores", "name": "Quantificador universal (∀)", "order": 1, "description": "Para todo x em A, p(x). Abrangência total." },
+      { "id": "md-t04-s02", "topicId": "md-t04-quantificadores", "name": "Quantificador existencial (∃) e estrito (∃!)", "order": 2, "description": "Existe pelo menos um / existe exatamente um." },
+      { "id": "md-t04-s03", "topicId": "md-t04-quantificadores", "name": "Negação de proposições quantificadas", "order": 3, "description": "¬(∀x)p(x) ⇔ (∃x)¬p(x) e vice-versa." },
+      { "id": "md-t04-s04", "topicId": "md-t04-quantificadores", "name": "Múltiplos quantificadores", "order": 4, "description": "Ordem de quantificadores altera significado." },
+      { "id": "md-t04-s05", "topicId": "md-t04-quantificadores", "name": "Demonstrações simples em teoria de conjuntos", "order": 5, "description": "Provas de A⊆B, A=B usando definições e lógica." }
+    ],
+    "microcompetencies": [
+      { "id": "md-mc013", "topicId": "md-t04-quantificadores", "description": "Expressar proposições usando quantificadores ∀ e ∃", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "md-mc014", "topicId": "md-t04-quantificadores", "description": "Negar proposições quantificadas corretamente", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "md-mc015", "topicId": "md-t04-quantificadores", "description": "Realizar demonstrações simples usando lógica e conjuntos", "bloomLevel": 4, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "md-t05-relacoes-entre-conjuntos",
+    "moduleId": "md-mod2-relacoes-funcoes",
+    "name": "Relações entre Dois Conjuntos",
+    "order": 1,
+    "classNumbers": [13, 14, 15],
+    "documentRefs": ["doc-md-livro-menezes"],
+    "subtopics": [
+      { "id": "md-t05-s01", "topicId": "md-t05-relacoes-entre-conjuntos", "name": "Definição de relação como subconjunto de A×B", "order": 1, "description": "R ⊆ A×B. Domínio, imagem e contradomínio de uma relação." },
+      { "id": "md-t05-s02", "topicId": "md-t05-relacoes-entre-conjuntos", "name": "Representação gráfica de relações", "order": 2, "description": "Diagrama cartesiano, diagrama de flechas." },
+      { "id": "md-t05-s03", "topicId": "md-t05-relacoes-entre-conjuntos", "name": "Operações com relações", "order": 3, "description": "União, interseção, composição, inversa de relações." }
+    ],
+    "microcompetencies": [
+      { "id": "md-mc016", "topicId": "md-t05-relacoes-entre-conjuntos", "description": "Definir e representar relações como subconjuntos do produto cartesiano", "bloomLevel": 2, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "md-mc017", "topicId": "md-t05-relacoes-entre-conjuntos", "description": "Determinar domínio, imagem e contradomínio de relações", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "md-mc018", "topicId": "md-t05-relacoes-entre-conjuntos", "description": "Realizar operações (união, interseção, composição, inversa) com relações", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "md-t06-tipos-relacoes",
+    "moduleId": "md-mod2-relacoes-funcoes",
+    "name": "Tipos de Relações",
+    "order": 2,
+    "classNumbers": [16, 17, 18],
+    "documentRefs": ["doc-md-livro-menezes"],
+    "subtopics": [
+      { "id": "md-t06-s01", "topicId": "md-t06-tipos-relacoes", "name": "Relações reflexiva, simétrica, transitiva, antissimétrica", "order": 1, "description": "Propriedades fundamentais de relações em A×A." }
+    ],
+    "microcompetencies": [
+      { "id": "md-mc019", "topicId": "md-t06-tipos-relacoes", "description": "Identificar e verificar propriedades de relações (reflexiva, simétrica, transitiva, antissimétrica)", "bloomLevel": 4, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "md-t07-funcoes-como-relacoes",
+    "moduleId": "md-mod2-relacoes-funcoes",
+    "name": "Funções como Relações",
+    "order": 3,
+    "classNumbers": [19],
+    "documentRefs": ["doc-md-livro-menezes"],
+    "subtopics": [
+      { "id": "md-t07-s01", "topicId": "md-t07-funcoes-como-relacoes", "name": "Funções parciais e totais", "order": 1, "description": "Função parcial: nem todo elemento do domínio tem imagem. Função total: todos têm." },
+      { "id": "md-t07-s02", "topicId": "md-t07-funcoes-como-relacoes", "name": "Função inversível (injetora, sobrejetora, bijetora)", "order": 2, "description": "Condições para existência de inversa." }
+    ],
+    "microcompetencies": [
+      { "id": "md-mc020", "topicId": "md-t07-funcoes-como-relacoes", "description": "Distinguir funções parciais e totais e classificar relações como funções", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "md-mc021", "topicId": "md-t07-funcoes-como-relacoes", "description": "Verificar injetividade, sobrejetividade e bijetividade de funções", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "md-t08-relacao-equivalencia",
+    "moduleId": "md-mod3-ordem-inducao-boole",
+    "name": "Relação de Equivalência",
+    "order": 1,
+    "classNumbers": [24, 26],
+    "documentRefs": ["doc-md-livro-menezes"],
+    "subtopics": [
+      { "id": "md-t08-s01", "topicId": "md-t08-relacao-equivalencia", "name": "Definição (reflexiva, simétrica, transitiva)", "order": 1, "description": "Relação que satisfaz as três propriedades simultaneamente." },
+      { "id": "md-t08-s02", "topicId": "md-t08-relacao-equivalencia", "name": "Classes de equivalência e partições", "order": 2, "description": "Classes de equivalência particionam o conjunto." }
+    ],
+    "microcompetencies": [
+      { "id": "md-mc022", "topicId": "md-t08-relacao-equivalencia", "description": "Verificar se uma relação é de equivalência e determinar classes de equivalência", "bloomLevel": 4, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "md-t09-relacao-ordem",
+    "moduleId": "md-mod3-ordem-inducao-boole",
+    "name": "Relação de Ordem e Diagrama de Hasse",
+    "order": 2,
+    "classNumbers": [26, 28],
+    "documentRefs": ["doc-md-livro-menezes"],
+    "subtopics": [
+      { "id": "md-t09-s01", "topicId": "md-t09-relacao-ordem", "name": "Ordem parcial e total", "order": 1, "description": "Reflexiva + antissimétrica + transitiva. Parcial: nem todos comparáveis. Total: todos comparáveis." },
+      { "id": "md-t09-s02", "topicId": "md-t09-relacao-ordem", "name": "Diagrama de Hasse", "order": 2, "description": "Representação compacta de conjuntos parcialmente ordenados." },
+      { "id": "md-t09-s03", "topicId": "md-t09-relacao-ordem", "name": "Elementos notáveis", "order": 3, "description": "Máximo, mínimo, maximal, minimal, supremo, ínfimo, cota superior e inferior." },
+      { "id": "md-t09-s04", "topicId": "md-t09-relacao-ordem", "name": "Reticulados", "order": 4, "description": "Conjunto ordenado onde todo par tem supremo e ínfimo." }
+    ],
+    "microcompetencies": [
+      { "id": "md-mc023", "topicId": "md-t09-relacao-ordem", "description": "Construir e interpretar diagramas de Hasse", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "md-mc024", "topicId": "md-t09-relacao-ordem", "description": "Identificar elementos notáveis em conjuntos ordenados", "bloomLevel": 4, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "md-mc025", "topicId": "md-t09-relacao-ordem", "description": "Verificar se um conjunto ordenado é reticulado", "bloomLevel": 4, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "md-t10-algebra-booleana",
+    "moduleId": "md-mod3-ordem-inducao-boole",
+    "name": "Álgebra Booleana",
+    "order": 3,
+    "classNumbers": [28],
+    "documentRefs": ["doc-md-livro-menezes"],
+    "subtopics": [
+      { "id": "md-t10-s01", "topicId": "md-t10-algebra-booleana", "name": "Definição e axiomas", "order": 1, "description": "Reticulado complementado e distributivo." }
+    ],
+    "microcompetencies": [
+      { "id": "md-mc026", "topicId": "md-t10-algebra-booleana", "description": "Identificar álgebras booleanas e aplicar seus axiomas", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "md-t11-recursao-somatorios",
+    "moduleId": "md-mod3-ordem-inducao-boole",
+    "name": "Recursão e Somatórios",
+    "order": 4,
+    "classNumbers": [29, 30],
+    "documentRefs": ["doc-md-livro-menezes"],
+    "subtopics": [
+      { "id": "md-t11-s01", "topicId": "md-t11-recursao-somatorios", "name": "Definições recursivas / indutivas", "order": 1, "description": "Caso base + passo recursivo. Sequências definidas recursivamente." },
+      { "id": "md-t11-s02", "topicId": "md-t11-recursao-somatorios", "name": "Notação de somatório (Σ)", "order": 2, "description": "Propriedades, somas telescópicas, fórmulas clássicas." }
+    ],
+    "microcompetencies": [
+      { "id": "md-mc027", "topicId": "md-t11-recursao-somatorios", "description": "Definir sequências recursivamente e calcular termos", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null },
+      { "id": "md-mc028", "topicId": "md-t11-recursao-somatorios", "description": "Calcular somatórios usando propriedades e fórmulas conhecidas", "bloomLevel": 3, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  },
+  {
+    "id": "md-t12-inducao-matematica",
+    "moduleId": "md-mod3-ordem-inducao-boole",
+    "name": "Indução Matemática",
+    "order": 5,
+    "classNumbers": [31],
+    "documentRefs": ["doc-md-livro-menezes"],
+    "subtopics": [
+      { "id": "md-t12-s01", "topicId": "md-t12-inducao-matematica", "name": "Princípio de indução matemática", "order": 1, "description": "Base + hipótese indutiva + passo indutivo." },
+      { "id": "md-t12-s02", "topicId": "md-t12-inducao-matematica", "name": "Provas por indução", "order": 2, "description": "Somatórios, desigualdades, divisibilidade." }
+    ],
+    "microcompetencies": [
+      { "id": "md-mc029", "topicId": "md-t12-inducao-matematica", "description": "Realizar provas por indução matemática (somas, desigualdades)", "bloomLevel": 4, "currentMastery": "none", "lastAssessedAt": null }
+    ]
+  }
+]

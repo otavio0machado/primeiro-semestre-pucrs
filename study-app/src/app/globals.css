@@ -1,0 +1,125 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════════
+   DESIGN TOKENS — Sistema Cognitivo de Estudo Pessoal
+   Dark-first. Geist Sans + Geist Mono.
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Background */
+  --bg-primary: #09090b;
+  --bg-secondary: #18181b;
+  --bg-tertiary: #27272a;
+  --bg-surface: #1c1c1f;
+
+  /* Foreground */
+  --fg-primary: #fafafa;
+  --fg-secondary: #a1a1aa;
+  --fg-tertiary: #71717a;
+  --fg-muted: #3f3f46;
+
+  /* Borders */
+  --border-default: #27272a;
+  --border-subtle: #1f1f23;
+  --border-focus: #3b82f6;
+
+  /* Mastery semantic colors */
+  --mastery-none: #3f3f46;
+  --mastery-exposed: #eab308;
+  --mastery-developing: #f97316;
+  --mastery-proficient: #3b82f6;
+  --mastery-mastered: #10b981;
+
+  /* Functional accents */
+  --accent-primary: #3b82f6;
+  --accent-danger: #ef4444;
+  --accent-warning: #f59e0b;
+  --accent-success: #10b981;
+  --accent-info: #6366f1;
+
+  /* Radii */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* Shadows (minimal) */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-dropdown: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  /* Timing */
+  --duration-fast: 100ms;
+  --duration-normal: 150ms;
+  --duration-slow: 250ms;
+}
+
+@theme inline {
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--fg-primary);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* Expose tokens to Tailwind */
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-bg-tertiary: var(--bg-tertiary);
+  --color-bg-surface: var(--bg-surface);
+
+  --color-fg-primary: var(--fg-primary);
+  --color-fg-secondary: var(--fg-secondary);
+  --color-fg-tertiary: var(--fg-tertiary);
+  --color-fg-muted: var(--fg-muted);
+
+  --color-border-default: var(--border-default);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-focus: var(--border-focus);
+
+  --color-mastery-none: var(--mastery-none);
+  --color-mastery-exposed: var(--mastery-exposed);
+  --color-mastery-developing: var(--mastery-developing);
+  --color-mastery-proficient: var(--mastery-proficient);
+  --color-mastery-mastered: var(--mastery-mastered);
+
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-danger: var(--accent-danger);
+  --color-accent-warning: var(--accent-warning);
+  --color-accent-success: var(--accent-success);
+  --color-accent-info: var(--accent-info);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BASE STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+body {
+  background: var(--bg-primary);
+  color: var(--fg-primary);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* Scrollbar (dark theme) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--fg-muted);
+}
+
+/* Focus ring */
+*:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background: rgba(59, 130, 246, 0.3);
+}
