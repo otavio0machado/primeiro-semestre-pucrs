@@ -12,10 +12,9 @@ import type {
   ToolResult,
   PostAction,
   MixSource,
-  MODELS,
 } from './types'
 import { MODELS as ModelRegistry } from './types'
-import { callClaude } from './providers/claude'
+import { callClaude, streamClaude } from './providers/claude'
 import { callGemini } from './providers/gemini'
 import { buildSystemPrompt } from './context'
 import { toProviderTools, executeTool } from './tools'
@@ -35,7 +34,7 @@ export async function orchestrate(
     return executeMixMode(messages, context, systemPrompt, providerTools)
   }
 
-  return executeSingleModel(messages, model, systemPrompt, providerTools)
+  return executeSingleModel(messages, model, context, systemPrompt, providerTools)
 }
 
 // ── Single Model Execution ──────────────────────────────────
@@ -43,6 +42,7 @@ export async function orchestrate(
 async function executeSingleModel(
   messages: JarvisMessage[],
   model: ModelId,
+  context: JarvisContext,
   systemPrompt: string,
   providerTools: ReturnType<typeof toProviderTools>,
 ): Promise<OrchestratorResponse> {
@@ -82,7 +82,7 @@ async function executeSingleModel(
 
   if (response.toolCalls && response.toolCalls.length > 0) {
     for (const tc of response.toolCalls) {
-      const result = await executeTool(tc.name, tc.arguments, tc.id)
+      const result = await executeTool(tc.name, tc.arguments, tc.id, context)
       toolResults.push(result)
     }
 
@@ -122,7 +122,7 @@ async function executeSingleModel(
   }
 
   // Generate post-actions based on context
-  const postActions = generatePostActions(finalContent, toolResults, messages)
+  const postActions = generatePostActions(finalContent, toolResults, messages, context)
 
   // Estimate cost
   const costInput = (response.usage.inputTokens / 1000) * modelInfo.costPer1kInput
@@ -238,7 +238,7 @@ async function executeMixMode(
   for (const result of successResults) {
     if (result.toolCalls && result.toolCalls.length > 0) {
       for (const tc of result.toolCalls) {
-        const toolResult = await executeTool(tc.name, tc.arguments, tc.id)
+        const toolResult = await executeTool(tc.name, tc.arguments, tc.id, context)
         toolResults.push(toolResult)
       }
       break // Only execute tools from one model
@@ -286,7 +286,7 @@ async function executeMixMode(
   }))
 
   const totalDuration = successResults.reduce((sum, r) => sum + r.durationMs, 0) + synthesisResponse.durationMs
-  const postActions = generatePostActions(synthesisResponse.content, toolResults, messages)
+  const postActions = generatePostActions(synthesisResponse.content, toolResults, messages, context)
 
   const assistantMessage: JarvisMessage = {
     id: `jarvis_mix_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
@@ -309,58 +309,263 @@ async function executeMixMode(
   return { message: assistantMessage, toolsExecuted: toolResults }
 }
 
-// ── Post-Action Generation ──────────────────────────────────
+// ── Post-Action Generation (Context-Aware) ──────────────────
 
-function generatePostActions(content: string, toolResults: ToolResult[], messages: JarvisMessage[]): PostAction[] {
+function generatePostActions(
+  content: string,
+  toolResults: ToolResult[],
+  messages: JarvisMessage[],
+  context: JarvisContext,
+): PostAction[] {
   const actions: PostAction[] = []
-  const lastUserMsg = messages.filter(m => m.role === 'user').pop()?.content?.toLowerCase() ?? ''
+  const ts = Date.now()
   const contentLower = content.toLowerCase()
+  const lastUserMsg = messages.filter(m => m.role === 'user').pop()?.content?.toLowerCase() ?? ''
 
-  // If the response explains a concept, offer to create notes/flashcards
-  if (contentLower.includes('definição') || contentLower.includes('teorema') || contentLower.includes('conceito') || contentLower.includes('fórmula') || lastUserMsg.includes('explica') || lastUserMsg.includes('o que é')) {
+  // Detect conversation intent
+  const isExplanation = contentLower.includes('definição') || contentLower.includes('teorema') ||
+    contentLower.includes('conceito') || contentLower.includes('fórmula') ||
+    lastUserMsg.includes('explica') || lastUserMsg.includes('o que é') || lastUserMsg.includes('como funciona')
+  const isExerciseRelated = contentLower.includes('exercício') || contentLower.includes('questão') ||
+    contentLower.includes('resolva') || contentLower.includes('calcule')
+  const hasPlanContent = contentLower.includes('plano') || contentLower.includes('cronograma')
+  const createdContent = toolResults.some(r => r.success)
+
+  // Find current topic mastery for smart suggestions
+  const currentMastery = context.topicMasteries.find(t => t.id === context.currentTopicId)
+  const masteryLevel = currentMastery?.mastery ?? 'none'
+  const topicName = context.currentTopicName ?? ''
+  const courseName = context.currentDisciplineName ?? ''
+
+  // 1. After explanation → offer to save as note + generate flashcards
+  if (isExplanation) {
     actions.push({
-      id: `pa_note_${Date.now()}`,
-      label: 'Criar nota com isso',
+      id: `pa_note_${ts}`,
+      label: 'Salvar como nota',
       icon: 'StickyNote',
       action: 'createNote',
-      params: { content, title: 'Nota do Jarvis', format: 'summary' },
+      params: { content, title: `${topicName || 'Nota'} — Jarvis`, format: 'summary', topic_id: context.currentTopicId, discipline_id: context.currentDisciplineId },
       variant: 'primary',
     })
     actions.push({
-      id: `pa_flash_${Date.now()}`,
+      id: `pa_flash_${ts}`,
       label: 'Gerar flashcards',
       icon: 'Layers',
-      action: 'generateFlashcards',
-      params: { content },
+      action: 'generateSmartFlashcards',
+      params: { topic_name: topicName, course_name: courseName, source_content: content, topic_id: context.currentTopicId, discipline_id: context.currentDisciplineId },
       variant: 'secondary',
     })
   }
 
-  // If response involves exercises, offer to practice more
-  if (contentLower.includes('exercício') || contentLower.includes('questão') || contentLower.includes('resolva') || toolResults.some(r => r.data && typeof r.data === 'object')) {
+  // 2. After exercises → offer more exercises or tutor mode
+  if (isExerciseRelated) {
     actions.push({
-      id: `pa_exercise_${Date.now()}`,
-      label: 'Gerar mais exercícios',
+      id: `pa_more_ex_${ts}`,
+      label: 'Mais exercícios',
       icon: 'Dumbbell',
-      action: 'generateExercises',
-      params: {},
+      action: 'generateSmartExercises',
+      params: { topic_name: topicName, course_name: courseName, topic_id: context.currentTopicId, discipline_id: context.currentDisciplineId },
       variant: 'secondary',
     })
-  }
-
-  // If creating a study plan, offer to create session
-  if (contentLower.includes('plano') || contentLower.includes('estud') || contentLower.includes('sessão')) {
     actions.push({
-      id: `pa_session_${Date.now()}`,
-      label: 'Registrar sessão de estudo',
-      icon: 'Clock',
-      action: 'createStudySession',
-      params: { kind: 'study' },
+      id: `pa_tutor_${ts}`,
+      label: 'Modo tutor',
+      icon: 'Brain',
+      action: 'tutorAI',
+      params: { topic_name: topicName, course_name: courseName, message: 'Me ajude a entender como resolver esse tipo de exercício' },
       variant: 'ghost',
     })
   }
 
-  return actions.slice(0, 4) // max 4 actions
+  // 3. Based on mastery level — proactive suggestions
+  if (!isExplanation && !isExerciseRelated && currentMastery) {
+    if (masteryLevel === 'none' || masteryLevel === 'exposed') {
+      actions.push({
+        id: `pa_explain_${ts}`,
+        label: `Explicar ${topicName || 'tópico'}`,
+        icon: 'Brain',
+        action: 'explainTopicAI',
+        params: { topic_name: topicName, course_name: courseName },
+        variant: 'primary',
+      })
+    } else if (masteryLevel === 'developing') {
+      actions.push({
+        id: `pa_practice_${ts}`,
+        label: 'Praticar com exercícios',
+        icon: 'Dumbbell',
+        action: 'generateSmartExercises',
+        params: { topic_name: topicName, course_name: courseName, topic_id: context.currentTopicId, discipline_id: context.currentDisciplineId },
+        variant: 'primary',
+      })
+    } else if (masteryLevel === 'proficient' || masteryLevel === 'mastered') {
+      actions.push({
+        id: `pa_challenge_${ts}`,
+        label: 'Desafio avançado',
+        icon: 'Zap',
+        action: 'generateSmartExercises',
+        params: { topic_name: topicName, course_name: courseName, difficulty: 5, topic_id: context.currentTopicId, discipline_id: context.currentDisciplineId },
+        variant: 'secondary',
+      })
+    }
+  }
+
+  // 4. If there are upcoming exams, suggest exam plan
+  if (!hasPlanContent && context.upcomingExams.length > 0) {
+    const nextExam = context.upcomingExams[0]
+    if (nextExam.daysUntil <= 14) {
+      actions.push({
+        id: `pa_exam_${ts}`,
+        label: `Plano para ${nextExam.name}`,
+        icon: 'Calendar',
+        action: 'generateExamPlanAI',
+        params: { exam_name: nextExam.name, course_name: courseName, exam_date: nextExam.date, hours_per_day: 3 },
+        variant: 'ghost',
+      })
+    }
+  }
+
+  // 5. If there are due flashcards, remind
+  if (context.dueFlashcards > 0 && !isExerciseRelated && !isExplanation) {
+    actions.push({
+      id: `pa_review_${ts}`,
+      label: `Revisar ${context.dueFlashcards} flashcards`,
+      icon: 'Layers',
+      action: 'listDueFlashcards',
+      params: {},
+      variant: 'ghost',
+    })
+  }
+
+  // 6. After study plan → register session
+  if (hasPlanContent || createdContent) {
+    actions.push({
+      id: `pa_session_${ts}`,
+      label: 'Registrar sessão',
+      icon: 'Clock',
+      action: 'createStudySession',
+      params: { kind: 'study', topic_id: context.currentTopicId, discipline_id: context.currentDisciplineId },
+      variant: 'ghost',
+    })
+  }
+
+  return actions.slice(0, 4)
+}
+
+// ── Streaming Orchestration ─────────────────────────────────
+
+export async function orchestrateStream(
+  messages: JarvisMessage[],
+  model: ModelId,
+  context: JarvisContext,
+  onDelta: (delta: string) => void,
+  onToolResults: (results: ToolResult[]) => void,
+  onPostActions: (actions: PostAction[]) => void,
+  onMeta: (meta: JarvisMessage['meta']) => void,
+): Promise<void> {
+  const systemPrompt = buildSystemPrompt(context)
+  const providerTools = toProviderTools()
+  const modelInfo = ModelRegistry[model]
+
+  if (!modelInfo || model === 'mix') {
+    // Fall back to non-streaming for mix mode
+    const result = await orchestrate(messages, model, context)
+    onDelta(result.message.content)
+    if (result.toolsExecuted.length > 0) onToolResults(result.toolsExecuted)
+    if (result.message.postActions) onPostActions(result.message.postActions)
+    if (result.message.meta) onMeta(result.message.meta)
+    return
+  }
+
+  const conversationMessages = messages
+    .filter(m => m.role === 'user' || m.role === 'assistant')
+    .map(m => ({ role: m.role as 'user' | 'assistant', content: m.content }))
+
+  let response: import('./types').ProviderResponse
+
+  if (modelInfo.provider === 'anthropic') {
+    response = await streamClaude(model, {
+      systemPrompt,
+      messages: conversationMessages,
+      tools: providerTools,
+      maxTokens: modelInfo.maxTokens,
+      temperature: 0.4,
+    }, onDelta)
+  } else {
+    // Gemini doesn't support streaming in our implementation yet — fall back
+    response = await (await import('./providers/gemini')).callGemini(model, {
+      systemPrompt,
+      messages: conversationMessages,
+      tools: providerTools,
+      maxTokens: modelInfo.maxTokens,
+      temperature: 0.4,
+    })
+    onDelta(response.content)
+  }
+
+  // Execute tool calls if any
+  const toolResults: ToolResult[] = []
+  let finalContent = response.content
+
+  if (response.toolCalls && response.toolCalls.length > 0) {
+    for (const tc of response.toolCalls) {
+      const result = await executeTool(tc.name, tc.arguments, tc.id, context)
+      toolResults.push(result)
+    }
+    onToolResults(toolResults)
+
+    // Follow-up call with tool results (streamed)
+    const toolResultsSummary = toolResults.map(r =>
+      `[Tool ${r.toolCallId}]: ${r.success ? '✓' : '✗'} ${r.message}`
+    ).join('\n')
+
+    const followUpMessages = [
+      ...conversationMessages,
+      { role: 'assistant' as const, content: response.content || 'Executando ações...' },
+      { role: 'user' as const, content: `Resultados das ferramentas:\n${toolResultsSummary}\n\nResuma o que foi feito e sugira próximos passos.` },
+    ]
+
+    let followUp: import('./types').ProviderResponse
+
+    if (modelInfo.provider === 'anthropic') {
+      followUp = await streamClaude(model, {
+        systemPrompt,
+        messages: followUpMessages,
+        maxTokens: modelInfo.maxTokens,
+        temperature: 0.4,
+      }, onDelta)
+    } else {
+      followUp = await (await import('./providers/gemini')).callGemini(model, {
+        systemPrompt,
+        messages: followUpMessages,
+        maxTokens: modelInfo.maxTokens,
+        temperature: 0.4,
+      })
+      onDelta(followUp.content)
+    }
+
+    finalContent = followUp.content
+    response.usage.inputTokens += followUp.usage.inputTokens
+    response.usage.outputTokens += followUp.usage.outputTokens
+    response.durationMs += followUp.durationMs
+  }
+
+  // Post-actions and meta
+  const postActions = generatePostActions(finalContent, toolResults, messages, context)
+  if (postActions.length > 0) onPostActions(postActions)
+
+  const costInput = (response.usage.inputTokens / 1000) * modelInfo.costPer1kInput
+  const costOutput = (response.usage.outputTokens / 1000) * modelInfo.costPer1kOutput
+  const totalCost = costInput + costOutput
+
+  onMeta({
+    model: response.model,
+    durationMs: response.durationMs,
+    inputTokens: response.usage.inputTokens,
+    outputTokens: response.usage.outputTokens,
+    estimatedCostUsd: totalCost,
+  })
+
+  await logUsage(model, response.usage.inputTokens, response.usage.outputTokens, totalCost, response.durationMs)
 }
 
 // ── Usage Logging ───────────────────────────────────────────

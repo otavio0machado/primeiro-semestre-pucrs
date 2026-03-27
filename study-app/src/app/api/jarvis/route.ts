@@ -6,30 +6,58 @@
 import { NextResponse } from 'next/server'
 import { orchestrate } from '@/lib/jarvis/orchestrator'
 import { buildContext } from '@/lib/jarvis/context'
-import type { ModelId, JarvisMessage } from '@/lib/jarvis/types'
+import { executeTool, getTool } from '@/lib/jarvis/tools'
+import type { ModelId, JarvisMessage, PostAction } from '@/lib/jarvis/types'
+
+function buildActionInstruction(action: PostAction): string {
+  const params = Object.keys(action.params).length > 0
+    ? JSON.stringify(action.params, null, 2)
+    : '{}'
+
+  return [
+    `Execute a ação "${action.action}" com base no contexto atual.`,
+    `Rótulo do botão: ${action.label}`,
+    `Parâmetros:`,
+    params,
+  ].join('\n')
+}
+
+function makeAssistantMessage(
+  model: ModelId,
+  content: string,
+  toolResults: JarvisMessage['toolResults'] = [],
+): JarvisMessage {
+  return {
+    id: `jarvis_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    role: 'assistant',
+    content,
+    model,
+    toolResults: toolResults.length > 0 ? toolResults : undefined,
+    timestamp: Date.now(),
+  }
+}
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
     const {
       messages,
+      action,
       model,
       currentPage,
       disciplineId,
       topicId,
+      noteContent,
+      noteTitle,
     } = body as {
-      messages: JarvisMessage[]
+      messages?: JarvisMessage[]
+      action?: PostAction
       model: ModelId
       currentPage?: string
       disciplineId?: string
       topicId?: string
-    }
-
-    if (!messages || messages.length === 0) {
-      return NextResponse.json(
-        { error: 'Messages are required' },
-        { status: 400 }
-      )
+      noteContent?: string
+      noteTitle?: string
     }
 
     if (!model) {
@@ -39,15 +67,56 @@ export async function POST(request: Request) {
       )
     }
 
+    if (!action && (!messages || messages.length === 0)) {
+      return NextResponse.json(
+        { error: 'Messages are required' },
+        { status: 400 }
+      )
+    }
+
     // Build context from current app state
     const context = await buildContext(
       currentPage ?? '/',
       disciplineId,
       topicId,
+      noteContent,
+      noteTitle,
     )
 
+    if (action) {
+      const tool = getTool(action.action)
+
+      if (tool) {
+        const toolResult = await executeTool(
+          action.action,
+          action.params,
+          `action_${Date.now()}`,
+          context,
+        )
+
+        return NextResponse.json({
+          message: makeAssistantMessage(model, toolResult.message, [toolResult]),
+          toolsExecuted: [toolResult],
+        })
+      }
+
+      const actionMessage: JarvisMessage = {
+        id: `action_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        role: 'user',
+        content: buildActionInstruction(action),
+        timestamp: Date.now(),
+      }
+
+      const result = await orchestrate([...(messages ?? []), actionMessage], model, context)
+
+      return NextResponse.json({
+        message: result.message,
+        toolsExecuted: result.toolsExecuted,
+      })
+    }
+
     // Run orchestrator
-    const result = await orchestrate(messages, model, context)
+    const result = await orchestrate(messages ?? [], model, context)
 
     return NextResponse.json({
       message: result.message,

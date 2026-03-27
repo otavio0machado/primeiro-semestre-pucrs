@@ -4,7 +4,6 @@ import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import {
   Send,
   Bot,
-  User,
   ChevronDown,
   ChevronUp,
   Loader2,
@@ -21,8 +20,15 @@ import {
   Cpu,
   Copy,
   Check,
+  Calendar,
+  BookOpen,
+  GraduationCap,
+  GitBranch,
+  Play,
+  FileText,
+  type LucideIcon,
 } from 'lucide-react'
-import type { JarvisMessage, ModelId, ModelInfo, PostAction, ToolResult, MixSource } from '@/lib/jarvis/types'
+import type { JarvisMessage, ModelId, ModelInfo, PostAction } from '@/lib/jarvis/types'
 import { MODELS } from '@/lib/jarvis/types'
 import {
   createConversation,
@@ -32,11 +38,17 @@ import {
   generateTitle,
   type ConversationRow,
 } from '@/lib/services/conversations'
+import dynamic from 'next/dynamic'
 import ReactMarkdown from 'react-markdown'
 import remarkMath from 'remark-math'
 import remarkGfm from 'remark-gfm'
 import rehypeKatex from 'rehype-katex'
 import 'katex/dist/katex.min.css'
+
+const MermaidDiagram = dynamic(
+  () => import('@/components/notes/mermaid-diagram').then(m => ({ default: m.MermaidDiagram })),
+  { ssr: false, loading: () => <div className="h-40 flex items-center justify-center text-xs text-fg-muted">Renderizando diagrama...</div> }
+)
 
 interface JarvisChatProps {
   mode: 'floating' | 'fullpage'
@@ -49,13 +61,25 @@ interface JarvisChatProps {
 }
 
 const SUGGESTIONS = [
-  { icon: Brain, text: 'Explica limites por definição epsilon-delta' },
-  { icon: StickyNote, text: 'Crie flashcards sobre indução matemática' },
-  { icon: Dumbbell, text: 'Gere um plano de estudo para a próxima prova' },
-  { icon: Zap, text: 'Quais são meus tópicos mais fracos?' },
-  { icon: Plus, text: 'Crie exercícios sobre derivadas' },
-  { icon: Layers, text: 'Resuma o tópico de lógica proposicional' },
+  { icon: Brain, text: 'Explica limites com analogias pro meu nível', tag: 'Explicação adaptativa' },
+  { icon: GraduationCap, text: 'Me ajude a resolver esse exercício passo a passo', tag: 'Tutor socrático' },
+  { icon: Calendar, text: 'Gere um plano de estudo para a próxima prova', tag: 'Plano de estudo' },
+  { icon: Dumbbell, text: 'Gere exercícios focados nas minhas fraquezas', tag: 'Exercícios direcionados' },
+  { icon: GitBranch, text: 'Crie um mapa conceitual de derivadas', tag: 'Mermaid' },
+  { icon: Play, text: 'Crie uma visualização interativa de funções', tag: 'Interativo' },
+  { icon: Layers, text: 'Gere flashcards adaptativos sobre indução', tag: 'Flashcards smart' },
+  { icon: FileText, text: 'Resuma esse conteúdo extraindo definições', tag: 'Resumo IA' },
 ]
+
+// Icon map for post-action buttons
+const POST_ACTION_ICONS: Record<string, LucideIcon> = {
+  StickyNote, Layers, Dumbbell, Brain, Zap, Clock, Calendar, BookOpen,
+  GraduationCap, GitBranch, Play, FileText, Sparkles,
+}
+
+function getActionIcon(iconName: string): LucideIcon {
+  return POST_ACTION_ICONS[iconName] ?? Zap
+}
 
 // ── Rich Markdown Renderer (react-markdown + KaTeX) ─────────
 
@@ -136,6 +160,10 @@ function MessageContent({ content }: { content: string }) {
                         dangerouslySetInnerHTML={{ __html: codeString }}
                       />
                     )
+                  }
+                  // Render Mermaid diagrams
+                  if (lang === 'mermaid') {
+                    return <div className="my-4"><MermaidDiagram chart={codeString} /></div>
                   }
                   return <CodeBlock lang={lang} code={codeString} />
                 }
@@ -320,24 +348,196 @@ export function JarvisChat({
     setError(null)
 
     try {
-      // Ensure we have a conversation in Supabase
       const convId = await ensureConversation(content)
-
-      // Save user message
       await saveMessage(convId, userMsg).catch(() => {})
 
-      // If this is the first user message and we auto-titled, update the title
       if (messages.length === 0) {
         const title = generateTitle(content)
         await updateConversation(convId, { title }).catch(() => {})
         onConversationUpdated?.(convId, title)
       }
 
+      const allMessages = [...messages, userMsg]
+
+      // Try streaming first (Anthropic models), fall back to regular
+      const useStreaming = currentModel !== 'mix' && currentModel.startsWith('claude')
+
+      if (useStreaming) {
+        await sendStreamingRequest(allMessages, convId)
+      } else {
+        await sendRegularRequest(allMessages, convId)
+      }
+    } catch (err) {
+      setError((err as Error).message)
+    } finally {
+      setIsLoading(false)
+      inputRef.current?.focus()
+    }
+  }
+
+  const sendStreamingRequest = async (allMessages: JarvisMessage[], convId: string) => {
+    const assistantMsgId = `jarvis_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
+    let streamedContent = ''
+    let toolResults: JarvisMessage['toolResults']
+    let postActions: JarvisMessage['postActions']
+    let meta: JarvisMessage['meta']
+
+    // Add placeholder assistant message
+    setMessages((prev) => [...prev, {
+      id: assistantMsgId,
+      role: 'assistant',
+      content: '',
+      model: currentModel,
+      timestamp: Date.now(),
+    }])
+
+    const res = await fetch('/api/jarvis/stream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: allMessages,
+        model: currentModel,
+        currentPage,
+        disciplineId,
+        topicId,
+      }),
+    })
+
+    if (!res.ok) {
+      const err = await res.json()
+      // Remove placeholder
+      setMessages((prev) => prev.filter(m => m.id !== assistantMsgId))
+      throw new Error(err.error || 'Erro ao processar')
+    }
+
+    const reader = res.body?.getReader()
+    if (!reader) throw new Error('Stream not available')
+
+    const decoder = new TextDecoder()
+    let buffer = ''
+
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+
+      buffer += decoder.decode(value, { stream: true })
+      const lines = buffer.split('\n')
+      buffer = lines.pop() ?? ''
+
+      let eventType = ''
+      for (const line of lines) {
+        if (line.startsWith('event: ')) {
+          eventType = line.slice(7)
+        } else if (line.startsWith('data: ') && eventType) {
+          try {
+            const data = JSON.parse(line.slice(6))
+            if (eventType === 'delta') {
+              streamedContent += data.text
+              setMessages((prev) => prev.map(m =>
+                m.id === assistantMsgId ? { ...m, content: streamedContent } : m
+              ))
+            } else if (eventType === 'tool_results') {
+              toolResults = data
+              setMessages((prev) => prev.map(m =>
+                m.id === assistantMsgId ? { ...m, toolResults: data } : m
+              ))
+              // After tool results, the follow-up stream will replace content
+              streamedContent = ''
+            } else if (eventType === 'post_actions') {
+              postActions = data
+              setMessages((prev) => prev.map(m =>
+                m.id === assistantMsgId ? { ...m, postActions: data } : m
+              ))
+            } else if (eventType === 'meta') {
+              meta = data
+              setMessages((prev) => prev.map(m =>
+                m.id === assistantMsgId ? { ...m, meta: data } : m
+              ))
+            } else if (eventType === 'error') {
+              throw new Error(data.message)
+            }
+          } catch (e) {
+            if (e instanceof Error && e.message !== 'Unexpected end of JSON input') {
+              throw e
+            }
+          }
+          eventType = ''
+        }
+      }
+    }
+
+    // Save final message
+    const finalMsg: JarvisMessage = {
+      id: assistantMsgId,
+      role: 'assistant',
+      content: streamedContent,
+      model: currentModel,
+      toolResults,
+      postActions,
+      meta,
+      timestamp: Date.now(),
+    }
+    await saveMessage(convId, finalMsg).catch(() => {})
+    if (meta?.estimatedCostUsd) {
+      await updateConversation(convId, { total_cost_usd: meta.estimatedCostUsd }).catch(() => {})
+    }
+  }
+
+  const sendRegularRequest = async (allMessages: JarvisMessage[], convId: string) => {
+    const res = await fetch('/api/jarvis', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: allMessages,
+        model: currentModel,
+        currentPage,
+        disciplineId,
+        topicId,
+      }),
+    })
+
+    if (!res.ok) {
+      const err = await res.json()
+      throw new Error(err.error || 'Erro ao processar')
+    }
+
+    const data = await res.json()
+    const assistantMsg: JarvisMessage = data.message
+    setMessages((prev) => [...prev, assistantMsg])
+
+    await saveMessage(convId, assistantMsg).catch(() => {})
+    if (assistantMsg.meta?.estimatedCostUsd) {
+      await updateConversation(convId, { total_cost_usd: assistantMsg.meta.estimatedCostUsd }).catch(() => {})
+    }
+  }
+
+  const handleExecuteAction = async (action: PostAction) => {
+    if (isLoading) return
+
+    const userMsg: JarvisMessage = {
+      id: `user_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      role: 'user',
+      content: action.label,
+      timestamp: Date.now(),
+    }
+
+    const nextMessages = [...messages, userMsg]
+
+    setMessages((prev) => [...prev, userMsg])
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const convId = await ensureConversation(action.label)
+
+      await saveMessage(convId, userMsg).catch(() => {})
+
       const res = await fetch('/api/jarvis', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: [...messages, userMsg],
+          messages: nextMessages,
+          action,
           model: currentModel,
           currentPage,
           disciplineId,
@@ -347,7 +547,7 @@ export function JarvisChat({
 
       if (!res.ok) {
         const err = await res.json()
-        throw new Error(err.error || 'Erro ao processar')
+        throw new Error(err.error || 'Erro ao processar ação')
       }
 
       const data = await res.json()
@@ -355,10 +555,8 @@ export function JarvisChat({
 
       setMessages((prev) => [...prev, assistantMsg])
 
-      // Save assistant message to Supabase
       await saveMessage(convId, assistantMsg).catch(() => {})
 
-      // Update cost on conversation
       if (assistantMsg.meta?.estimatedCostUsd) {
         await updateConversation(convId, {
           total_cost_usd: assistantMsg.meta.estimatedCostUsd,
@@ -372,14 +570,14 @@ export function JarvisChat({
     }
   }
 
-  const handleExecuteAction = async (action: PostAction) => {
-    await sendMessage(action.label)
-  }
-
   const toggleToolResult = (toolId: string) => {
     setExpandedToolResults((prev) => {
       const next = new Set(prev)
-      next.has(toolId) ? next.delete(toolId) : next.add(toolId)
+      if (next.has(toolId)) {
+        next.delete(toolId)
+      } else {
+        next.add(toolId)
+      }
       return next
     })
   }
@@ -387,7 +585,11 @@ export function JarvisChat({
   const toggleMixSources = (messageId: string) => {
     setExpandedMixSources((prev) => {
       const next = new Set(prev)
-      next.has(messageId) ? next.delete(messageId) : next.add(messageId)
+      if (next.has(messageId)) {
+        next.delete(messageId)
+      } else {
+        next.add(messageId)
+      }
       return next
     })
   }
@@ -463,11 +665,16 @@ export function JarvisChat({
         </div>
 
         {currentModelData && (
-          <span className="text-[10px] text-fg-muted">
-            {currentModelData.tier === 'fast' && '⚡'}
-            {currentModelData.tier === 'balanced' && '⚖️'}
-            {currentModelData.tier === 'powerful' && '🔥'}
-          </span>
+          <div className="flex items-center gap-1.5">
+            {currentModel.startsWith('claude') && (
+              <span className="px-1.5 py-0.5 rounded bg-green-500/10 text-[9px] font-medium text-green-400 tracking-wide">STREAM</span>
+            )}
+            <span className="text-[10px] text-fg-muted">
+              {currentModelData.tier === 'fast' && '⚡'}
+              {currentModelData.tier === 'balanced' && '⚖️'}
+              {currentModelData.tier === 'powerful' && '🔥'}
+            </span>
+          </div>
         )}
       </div>
 
@@ -480,25 +687,36 @@ export function JarvisChat({
           </div>
         ) : messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center px-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center mb-4">
-              <Bot className="w-7 h-7 text-blue-400" />
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500/20 via-purple-500/15 to-cyan-500/20 flex items-center justify-center mb-4 ring-1 ring-blue-500/10">
+              <Bot className="w-8 h-8 text-blue-400" />
             </div>
-            <h2 className="text-base font-semibold text-fg-primary mb-1">JARVIS</h2>
-            <p className="text-xs text-fg-tertiary mb-6 max-w-xs">
-              Copiloto de estudo. Pergunte, crie conteúdo, gere exercícios.
+            <div className="flex items-center gap-2 mb-1">
+              <h2 className="text-lg font-bold text-fg-primary">JARVIS</h2>
+              <span className="px-1.5 py-0.5 rounded bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-[10px] font-bold text-blue-400 tracking-wide">2.0</span>
+            </div>
+            <p className="text-xs text-fg-tertiary mb-1 max-w-sm">
+              Copiloto de estudo adaptativo com tutor socrático, exercícios direcionados, planos de prova e visualizações interativas.
             </p>
-            <div className={`grid gap-2 w-full ${mode === 'floating' ? 'grid-cols-1' : 'grid-cols-2 max-w-lg'}`}>
-              {SUGGESTIONS.slice(0, mode === 'floating' ? 4 : 6).map((sugg, idx) => {
+            <p className="text-[10px] text-fg-muted mb-6 max-w-xs">
+              Adapta-se ao seu nível de mastery e padrões de erro
+            </p>
+            <div className={`grid gap-2 w-full ${mode === 'floating' ? 'grid-cols-1 max-w-sm' : 'grid-cols-2 max-w-xl'}`}>
+              {SUGGESTIONS.slice(0, mode === 'floating' ? 4 : 8).map((sugg, idx) => {
                 const Icon = sugg.icon
                 return (
                   <button
                     key={idx}
                     onClick={() => sendMessage(sugg.text)}
-                    className="text-left p-3 rounded-lg bg-bg-secondary hover:bg-bg-tertiary transition-colors border border-border-default group"
+                    className="text-left p-3 rounded-lg bg-bg-secondary hover:bg-bg-tertiary transition-all border border-border-default group hover:border-blue-500/20 hover:shadow-sm"
                   >
-                    <div className="flex items-start gap-2">
-                      <Icon className="w-4 h-4 text-fg-muted group-hover:text-accent-primary transition-colors flex-shrink-0 mt-0.5" />
-                      <p className="text-xs text-fg-secondary group-hover:text-fg-primary transition-colors">{sugg.text}</p>
+                    <div className="flex items-start gap-2.5">
+                      <div className="w-7 h-7 rounded-md bg-bg-tertiary group-hover:bg-blue-500/10 flex items-center justify-center flex-shrink-0 transition-colors">
+                        <Icon className="w-3.5 h-3.5 text-fg-muted group-hover:text-blue-400 transition-colors" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-[10px] font-medium text-fg-muted group-hover:text-blue-400/80 transition-colors">{sugg.tag}</span>
+                        <p className="text-xs text-fg-secondary group-hover:text-fg-primary transition-colors mt-0.5 line-clamp-2">{sugg.text}</p>
+                      </div>
                     </div>
                   </button>
                 )
@@ -553,50 +771,88 @@ export function JarvisChat({
 
                       {/* Tool Results */}
                       {msg.toolResults && msg.toolResults.length > 0 && (
-                        <div className="space-y-1.5 mt-3">
-                          {msg.toolResults.map((tool) => (
-                            <div key={tool.toolCallId} className="rounded-lg overflow-hidden border border-border-default bg-bg-secondary">
-                              <button
-                                onClick={() => toggleToolResult(tool.toolCallId)}
-                                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-bg-tertiary transition-colors text-xs"
-                              >
-                                <div className={`w-1.5 h-1.5 rounded-full ${tool.success ? 'bg-green-500' : 'bg-red-500'}`} />
-                                <Zap className="w-3 h-3 text-fg-muted" />
-                                <span className="text-fg-secondary flex-1 text-left">{tool.message}</span>
-                                {expandedToolResults.has(tool.toolCallId)
-                                  ? <ChevronUp className="w-3 h-3 text-fg-muted" />
-                                  : <ChevronDown className="w-3 h-3 text-fg-muted" />}
-                              </button>
-                              {expandedToolResults.has(tool.toolCallId) && tool.data != null && (
-                                <div className="px-3 py-2 border-t border-border-default text-[11px] text-fg-tertiary bg-bg-primary">
-                                  <pre className="whitespace-pre-wrap break-words font-mono max-h-40 overflow-y-auto">
-                                    {JSON.stringify(tool.data as Record<string, unknown>, null, 2)}
-                                  </pre>
-                                </div>
-                              )}
-                            </div>
-                          ))}
+                        <div className="space-y-2 mt-3">
+                          {msg.toolResults.map((tool) => {
+                            const toolData = tool.data as Record<string, unknown> | undefined
+                            const hasHtml = !!(toolData?.html && typeof toolData.html === 'string')
+                            const hasMermaid = !!(toolData?.mermaid && typeof toolData.mermaid === 'string')
+
+                            return (
+                              <div key={tool.toolCallId} className="rounded-lg overflow-hidden border border-border-default bg-bg-secondary">
+                                <button
+                                  onClick={() => toggleToolResult(tool.toolCallId)}
+                                  className="w-full flex items-center gap-2 px-3 py-2 hover:bg-bg-tertiary transition-colors text-xs"
+                                >
+                                  <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${tool.success ? 'bg-green-500' : 'bg-red-500'}`} />
+                                  <Zap className="w-3 h-3 text-fg-muted flex-shrink-0" />
+                                  <span className="text-fg-secondary flex-1 text-left truncate">{tool.message.slice(0, 200)}</span>
+                                  {(hasHtml || hasMermaid) && (
+                                    <span className="px-1.5 py-0.5 rounded bg-purple-500/10 text-[9px] font-medium text-purple-400 flex-shrink-0">
+                                      {hasHtml ? 'INTERATIVO' : 'DIAGRAMA'}
+                                    </span>
+                                  )}
+                                  {expandedToolResults.has(tool.toolCallId)
+                                    ? <ChevronUp className="w-3 h-3 text-fg-muted flex-shrink-0" />
+                                    : <ChevronDown className="w-3 h-3 text-fg-muted flex-shrink-0" />}
+                                </button>
+                                {expandedToolResults.has(tool.toolCallId) && tool.data != null && (
+                                  <div className="border-t border-border-default bg-bg-primary">
+                                    {/* Interactive HTML preview */}
+                                    {hasHtml && (
+                                      <div className="p-3">
+                                        <iframe
+                                          srcDoc={toolData!.html as string}
+                                          className="w-full rounded-lg border border-border-default bg-white"
+                                          style={{ height: `${(toolData!.height as number) || 400}px` }}
+                                          sandbox="allow-scripts"
+                                          title={toolData!.title as string || 'Interativo'}
+                                        />
+                                      </div>
+                                    )}
+                                    {/* Mermaid diagram preview */}
+                                    {hasMermaid && (
+                                      <div className="p-3">
+                                        <MermaidDiagram chart={toolData!.mermaid as string} />
+                                      </div>
+                                    )}
+                                    {/* Raw data fallback */}
+                                    {!hasHtml && !hasMermaid && (
+                                      <div className="px-3 py-2 text-[11px] text-fg-tertiary">
+                                        <pre className="whitespace-pre-wrap break-words font-mono max-h-40 overflow-y-auto">
+                                          {JSON.stringify(tool.data as Record<string, unknown>, null, 2)}
+                                        </pre>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            )
+                          })}
                         </div>
                       )}
 
                       {/* Post-Action Buttons */}
                       {msg.postActions && msg.postActions.length > 0 && (
                         <div className="flex flex-wrap gap-2 mt-3">
-                          {msg.postActions.map((action) => (
-                            <button
-                              key={action.id}
-                              onClick={() => handleExecuteAction(action)}
-                              className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-colors ${
-                                action.variant === 'primary'
-                                  ? 'bg-blue-500/15 text-blue-400 hover:bg-blue-500/25 border border-blue-500/20'
-                                  : action.variant === 'secondary'
-                                    ? 'bg-bg-tertiary text-fg-secondary hover:text-fg-primary border border-border-default'
-                                    : 'text-fg-tertiary hover:text-fg-secondary hover:bg-bg-tertiary'
-                              }`}
-                            >
-                              {action.label}
-                            </button>
-                          ))}
+                          {msg.postActions.map((action) => {
+                            const ActionIcon = getActionIcon(action.icon)
+                            return (
+                              <button
+                                key={action.id}
+                                onClick={() => handleExecuteAction(action)}
+                                className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1.5 ${
+                                  action.variant === 'primary'
+                                    ? 'bg-blue-500/15 text-blue-400 hover:bg-blue-500/25 border border-blue-500/20 hover:shadow-sm'
+                                    : action.variant === 'secondary'
+                                      ? 'bg-bg-tertiary text-fg-secondary hover:text-fg-primary border border-border-default hover:border-blue-500/20'
+                                      : 'text-fg-tertiary hover:text-fg-secondary hover:bg-bg-tertiary'
+                                }`}
+                              >
+                                <ActionIcon className="w-3 h-3" />
+                                {action.label}
+                              </button>
+                            )
+                          })}
                         </div>
                       )}
 
@@ -632,7 +888,7 @@ export function JarvisChat({
               </div>
             ))}
 
-            {isLoading && (
+            {isLoading && !messages.some(m => m.role === 'assistant' && m.content === '' && m.id?.startsWith('jarvis_')) && (
               <div className="flex gap-3">
                 <div className="flex-shrink-0 w-7 h-7 rounded-lg bg-bg-tertiary flex items-center justify-center">
                   <Bot className="w-3.5 h-3.5 text-blue-400" />

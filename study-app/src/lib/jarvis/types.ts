@@ -86,10 +86,10 @@ export interface MixSource {
 export interface ToolDefinition {
   name: string
   description: string
-  category: 'notes' | 'flashcards' | 'sessions' | 'exercises' | 'exams' | 'errors' | 'explain' | 'progress' | 'visual'
+  category: 'notes' | 'flashcards' | 'sessions' | 'exercises' | 'exams' | 'errors' | 'explain' | 'progress' | 'visual' | 'ai-services' | 'tutoring'
   parameters: Record<string, ToolParameter>
   required: string[]
-  execute: (params: Record<string, unknown>) => Promise<ToolResult>
+  execute: (params: Record<string, unknown>, context?: JarvisContext) => Promise<ToolResult>
 }
 
 export interface ToolParameter {
@@ -126,10 +126,27 @@ export interface PostAction {
 
 // ── Context ─────────────────────────────────────────────────
 
+export interface TopicMastery {
+  id: string
+  name: string
+  mastery: string
+  score: number
+  disciplineId: string
+  disciplineName: string
+}
+
+export interface ErrorBreakdown {
+  category: string
+  count: number
+  recentExample?: string
+}
+
 export interface JarvisContext {
   currentPage: string
   currentDisciplineId?: string
   currentTopicId?: string
+  currentDisciplineName?: string
+  currentTopicName?: string
   disciplines: { id: string; name: string }[]
   upcomingExams: { name: string; date: string; daysUntil: number; disciplineId: string }[]
   recentTopics: { id: string; name: string; mastery: string }[]
@@ -137,6 +154,14 @@ export interface JarvisContext {
   totalStudyMinutesThisWeek: number
   unresolvedErrors: number
   dueFlashcards: number
+  /** Mastery breakdown per topic with scores */
+  topicMasteries: TopicMastery[]
+  /** Error breakdown by category with examples */
+  errorBreakdown: ErrorBreakdown[]
+  /** Content of the currently open note (if on notes page) */
+  currentNoteContent?: string
+  /** Title of the currently open note */
+  currentNoteTitle?: string
 }
 
 // ── Orchestrator ────────────────────────────────────────────

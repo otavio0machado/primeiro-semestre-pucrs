@@ -14,6 +14,12 @@ import {
   Sparkles,
   DollarSign,
   Loader2,
+  Calendar,
+  GraduationCap,
+  GitBranch,
+  Play,
+  FileText,
+  Bot,
 } from 'lucide-react'
 import { JarvisChat } from '@/components/jarvis/chat'
 import {
@@ -114,29 +120,44 @@ export default function JarvisPage() {
 
   const quickActions = [
     {
-      icon: StickyNote,
-      label: 'Criar nota',
-      action: () => handleNewConversation('Criar nota sobre tópico de estudo'),
-    },
-    {
-      icon: Layers,
-      label: 'Gerar flashcards',
-      action: () => handleNewConversation('Gerar flashcards'),
+      icon: GraduationCap,
+      label: 'Tutor socrático',
+      action: () => handleNewConversation('Me ajude a entender um conceito'),
     },
     {
       icon: Dumbbell,
-      label: 'Plano de estudo',
-      action: () => handleNewConversation('Criar plano de estudo para prova'),
+      label: 'Exercícios smart',
+      action: () => handleNewConversation('Gere exercícios focados nas minhas fraquezas'),
     },
     {
-      icon: Brain,
-      label: 'Revisar flashcards',
-      action: () => handleNewConversation('Flashcards para revisar'),
+      icon: Calendar,
+      label: 'Plano de prova',
+      action: () => handleNewConversation('Crie um plano de estudo para a próxima prova'),
+    },
+    {
+      icon: Layers,
+      label: 'Flashcards adaptativos',
+      action: () => handleNewConversation('Gere flashcards adaptativos para o tópico atual'),
+    },
+    {
+      icon: GitBranch,
+      label: 'Mapa conceitual',
+      action: () => handleNewConversation('Crie um mapa conceitual do tópico'),
+    },
+    {
+      icon: Play,
+      label: 'Interativo',
+      action: () => handleNewConversation('Crie uma visualização interativa'),
+    },
+    {
+      icon: FileText,
+      label: 'Resumir conteúdo',
+      action: () => handleNewConversation('Resuma esse conteúdo extraindo definições e teoremas'),
     },
     {
       icon: BarChart3,
       label: 'Diagnóstico',
-      action: () => handleNewConversation('Analisar erros e sugerir melhorias'),
+      action: () => handleNewConversation('Analise meus erros e sugira melhorias'),
     },
   ]
 
@@ -170,23 +191,25 @@ export default function JarvisPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="px-4 py-4 border-b border-border-default space-y-2">
+        <div className="px-4 py-4 border-b border-border-default space-y-1.5">
           <h3 className="text-xs font-semibold text-fg-tertiary uppercase tracking-wider mb-3">
-            Ações rápidas
+            Capacidades
           </h3>
-          {quickActions.map((action) => {
-            const Icon = action.icon
-            return (
-              <button
-                key={action.label}
-                onClick={action.action}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg bg-bg-tertiary hover:bg-bg-surface transition-colors text-fg-secondary hover:text-fg-primary text-xs font-medium"
-              >
-                <Icon className="w-4 h-4" />
-                {action.label}
-              </button>
-            )
-          })}
+          <div className="grid grid-cols-2 gap-1.5">
+            {quickActions.map((action) => {
+              const Icon = action.icon
+              return (
+                <button
+                  key={action.label}
+                  onClick={action.action}
+                  className="flex flex-col items-center gap-1.5 px-2 py-2.5 rounded-lg bg-bg-tertiary hover:bg-bg-surface transition-all text-fg-secondary hover:text-fg-primary text-center group hover:ring-1 hover:ring-blue-500/20"
+                >
+                  <Icon className="w-4 h-4 text-fg-muted group-hover:text-blue-400 transition-colors" />
+                  <span className="text-[10px] font-medium leading-tight">{action.label}</span>
+                </button>
+              )
+            })}
+          </div>
         </div>
 
         {/* Conversation History */}
@@ -269,13 +292,21 @@ export default function JarvisPage() {
         <div className="px-6 py-4 border-b border-border-default bg-bg-secondary">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Sparkles className="w-6 h-6 text-accent-primary" />
-              <h1 className="text-2xl font-bold text-fg-primary">JARVIS</h1>
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500/20 via-purple-500/15 to-cyan-500/20 flex items-center justify-center ring-1 ring-blue-500/10">
+                <Bot className="w-5 h-5 text-blue-400" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-xl font-bold text-fg-primary">JARVIS</h1>
+                  <span className="px-1.5 py-0.5 rounded bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-[10px] font-bold text-blue-400 tracking-wide">2.0</span>
+                </div>
+                <p className="text-[11px] text-fg-muted">Copiloto adaptativo com tutor, exercícios e visualizações</p>
+              </div>
             </div>
             {totalCost > 0 && (
               <div className="flex items-center gap-2 text-sm text-fg-secondary">
                 <DollarSign className="w-4 h-4" />
-                <span>Gastos totais: ${totalCost.toFixed(4)}</span>
+                <span>${totalCost.toFixed(4)}</span>
               </div>
             )}
           </div>
