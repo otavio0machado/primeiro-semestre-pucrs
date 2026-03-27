@@ -9,17 +9,12 @@ import type { DocumentChunk } from './types'
  * Extract text from a PDF buffer using unpdf (no DOMMatrix needed).
  */
 export async function extractPdfText(buffer: Buffer): Promise<{ text: string; pageCount: number }> {
-  const { extractText, getDocumentProxy } = await import('unpdf')
+  const { extractText } = await import('unpdf')
   const uint8 = new Uint8Array(buffer)
 
-  // Get page count
-  const pdf = await getDocumentProxy(uint8)
-  const pageCount = pdf.numPages
+  const { text, totalPages } = await extractText(uint8, { mergePages: true })
 
-  // Extract all text
-  const { text } = await extractText(uint8, { mergePages: true })
-
-  return { text, pageCount }
+  return { text, pageCount: totalPages }
 }
 
 /**
