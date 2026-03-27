@@ -1,32 +1,55 @@
+import {
+  getCurriculumAssessment,
+  getCurriculumAssessments,
+  seedAssessmentToRow,
+} from '@/lib/materials/catalog'
 import { supabase, type Assessment, type AssessmentStatus } from '../supabase'
 
+function fallbackAssessments(disciplineId?: string): Assessment[] {
+  return getCurriculumAssessments(disciplineId).map(seedAssessmentToRow)
+}
+
 export async function getAssessments(): Promise<Assessment[]> {
-  const { data, error } = await supabase
-    .from('assessments')
-    .select('*')
-    .order('date')
-  if (error) throw error
-  return data ?? []
+  try {
+    const { data, error } = await supabase
+      .from('assessments')
+      .select('*')
+      .order('date')
+    if (error) throw error
+    return data && data.length > 0 ? data : fallbackAssessments()
+  } catch {
+    return fallbackAssessments()
+  }
 }
 
 export async function getAssessmentsByDiscipline(disciplineId: string): Promise<Assessment[]> {
-  const { data, error } = await supabase
-    .from('assessments')
-    .select('*')
-    .eq('discipline_id', disciplineId)
-    .order('date')
-  if (error) throw error
-  return data ?? []
+  try {
+    const { data, error } = await supabase
+      .from('assessments')
+      .select('*')
+      .eq('discipline_id', disciplineId)
+      .order('date')
+    if (error) throw error
+    return data && data.length > 0 ? data : fallbackAssessments(disciplineId)
+  } catch {
+    return fallbackAssessments(disciplineId)
+  }
 }
 
 export async function getUpcomingAssessments(): Promise<Assessment[]> {
-  const { data, error } = await supabase
-    .from('assessments')
-    .select('*')
-    .in('status', ['upcoming', 'ready'])
-    .order('date')
-  if (error) throw error
-  return data ?? []
+  try {
+    const { data, error } = await supabase
+      .from('assessments')
+      .select('*')
+      .in('status', ['upcoming', 'ready'])
+      .order('date')
+    if (error) throw error
+    return data && data.length > 0
+      ? data
+      : fallbackAssessments().filter((assessment) => assessment.status !== 'completed')
+  } catch {
+    return fallbackAssessments().filter((assessment) => assessment.status !== 'completed')
+  }
 }
 
 export async function getNextExam(): Promise<Assessment | null> {
@@ -66,12 +89,18 @@ export async function updateAssessmentStatus(
 }
 
 export async function getAssessmentTopicIds(assessmentId: string): Promise<string[]> {
-  const { data, error } = await supabase
-    .from('assessment_topics')
-    .select('topic_id')
-    .eq('assessment_id', assessmentId)
-  if (error) throw error
-  return (data ?? []).map(r => r.topic_id)
+  try {
+    const { data, error } = await supabase
+      .from('assessment_topics')
+      .select('topic_id')
+      .eq('assessment_id', assessmentId)
+    if (error) throw error
+    return data && data.length > 0
+      ? data.map(r => r.topic_id)
+      : (getCurriculumAssessment(assessmentId)?.topicIds ?? [])
+  } catch {
+    return getCurriculumAssessment(assessmentId)?.topicIds ?? []
+  }
 }
 
 export async function getAssessmentWithTopics(assessmentId: string) {

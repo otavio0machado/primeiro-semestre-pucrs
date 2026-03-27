@@ -1,21 +1,35 @@
+import { seedConceptGraphToRows } from '@/lib/materials/catalog'
+import { getAllTopics } from '@/lib/services/disciplines'
 import { supabase, type KgNode, type KgEdge, type Topic } from '../supabase'
 
 export async function getKgNodes(): Promise<KgNode[]> {
-  const { data, error } = await supabase
-    .from('kg_nodes')
-    .select('*')
-    .order('id')
-  if (error) throw error
-  return data ?? []
+  try {
+    const { data, error } = await supabase
+      .from('kg_nodes')
+      .select('*')
+      .order('id')
+    if (error) throw error
+    if (data && data.length > 0) return data
+  } catch {
+    // Falls back below.
+  }
+
+  return seedConceptGraphToRows().nodes.map(({ mastery, score, errorCount, ...node }) => node)
 }
 
 export async function getKgEdges(): Promise<KgEdge[]> {
-  const { data, error } = await supabase
-    .from('kg_edges')
-    .select('*')
-    .order('id')
-  if (error) throw error
-  return data ?? []
+  try {
+    const { data, error } = await supabase
+      .from('kg_edges')
+      .select('*')
+      .order('id')
+    if (error) throw error
+    if (data && data.length > 0) return data
+  } catch {
+    // Falls back below.
+  }
+
+  return seedConceptGraphToRows().edges
 }
 
 export async function getFullGraph(): Promise<{ nodes: KgNode[]; edges: KgEdge[] }> {
@@ -29,27 +43,36 @@ export interface GraphWithMastery {
 }
 
 export async function getGraphWithMastery(): Promise<GraphWithMastery> {
-  const [{ nodes, edges }, topics] = await Promise.all([
-    getFullGraph(),
-    supabase.from('topics').select('id, mastery, score, error_count').then(r => {
-      if (r.error) throw r.error
-      return r.data ?? []
-    }),
-  ])
+  try {
+    const [{ nodes, edges }, topics] = await Promise.all([
+      getFullGraph(),
+      supabase.from('topics').select('id, mastery, score, error_count').then(r => {
+        if (r.error) throw r.error
+        return r.data ?? []
+      }),
+    ])
 
-  const topicMap = new Map(topics.map(t => [t.id, t]))
+    if (nodes.length > 0 && edges.length > 0) {
+      const topicMap = new Map(topics.map(t => [t.id, t]))
 
-  const enrichedNodes = nodes.map(node => {
-    const topic = node.topic_id ? topicMap.get(node.topic_id) : null
-    return {
-      ...node,
-      mastery: (topic?.mastery ?? 'none') as Topic['mastery'],
-      score: topic?.score ?? 0,
-      errorCount: topic?.error_count ?? 0,
+      const enrichedNodes = nodes.map(node => {
+        const topic = node.topic_id ? topicMap.get(node.topic_id) : null
+        return {
+          ...node,
+          mastery: (topic?.mastery ?? 'none') as Topic['mastery'],
+          score: topic?.score ?? 0,
+          errorCount: topic?.error_count ?? 0,
+        }
+      })
+
+      return { nodes: enrichedNodes, edges }
     }
-  })
+  } catch {
+    // Falls back below.
+  }
 
-  return { nodes: enrichedNodes, edges }
+  const topics = await getAllTopics()
+  return seedConceptGraphToRows(topics)
 }
 
 export function filterGraph(

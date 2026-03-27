@@ -11,18 +11,19 @@ import {
   ArrowRight,
   AlertCircle,
 } from 'lucide-react'
-import { cn, formatCountdown, countdownColor, masteryColor, masteryTextColor, formatScore } from '@/lib/utils'
+import { cn, formatCountdown, countdownColor, masteryColor, masteryTextColor } from '@/lib/utils'
 import { getUpcomingAssessments } from '@/lib/services/assessments'
-import { getAllTopics } from '@/lib/services/disciplines'
+import { getAllTopics, getDisciplines } from '@/lib/services/disciplines'
 import { getRecentSessions, getStudyStreak, getTotalStudyMinutes } from '@/lib/services/study-sessions'
 import { getDueCount } from '@/lib/services/flashcards'
 import { getNotes } from '@/lib/services/notes'
 import { getErrorOccurrences } from '@/lib/services/exercises'
-import type { Assessment, Topic, StudySession } from '@/lib/supabase'
+import type { Assessment, Discipline, Topic, StudySession } from '@/lib/supabase'
 
 export default function DashboardPage() {
   // Data states
   const [upcomingExams, setUpcomingExams] = useState<Assessment[]>([])
+  const [disciplines, setDisciplines] = useState<Discipline[]>([])
   const [topics, setTopics] = useState<Topic[]>([])
   const [recentSessions, setRecentSessions] = useState<StudySession[]>([])
   const [dueFlashcards, setDueFlashcards] = useState(0)
@@ -45,8 +46,9 @@ export default function DashboardPage() {
         setError(null)
 
         // Fetch all data in parallel
-        const [exams, topicsData, sessions, dueCount, notesCount, errors] = await Promise.all([
+        const [exams, disciplinesData, topicsData, sessions, dueCount, notesCount, errors] = await Promise.all([
           getUpcomingAssessments(),
+          getDisciplines(),
           getAllTopics(),
           getRecentSessions(),
           getDueCount(),
@@ -55,6 +57,7 @@ export default function DashboardPage() {
         ])
 
         setUpcomingExams(exams)
+        setDisciplines(disciplinesData)
         setTopics(topicsData)
         setRecentSessions(sessions.slice(0, 5))
         setDueFlashcards(dueCount)
@@ -96,6 +99,14 @@ export default function DashboardPage() {
     {} as Record<string, Topic[]>
   )
 
+  const disciplineNameMap = disciplines.reduce(
+    (acc, discipline) => {
+      acc[discipline.id] = discipline.name
+      return acc
+    },
+    {} as Record<string, string>
+  )
+
   if (isLoading) {
     return <LoadingSkeleton />
   }
@@ -106,11 +117,21 @@ export default function DashboardPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-fg-primary">
-            Olá, Otávio
+            Painel de Estudos
           </h1>
-          <p className="mt-1 text-sm text-fg-tertiary">{today}</p>
+          <p className="mt-1 text-sm text-fg-tertiary">
+            {today} · {totalMinutes} min estudados · {notesCountLabel(recentNotes)}
+          </p>
         </div>
       </div>
+
+      {error && (
+        <section className="rounded-lg border border-accent-warning/30 bg-accent-warning/5 p-4">
+          <p className="text-sm text-accent-warning">
+            Alguns dados não carregaram do banco e o dashboard entrou em modo curricular de fallback.
+          </p>
+        </section>
+      )}
 
       {/* Quick Stats Row */}
       <section className="grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -198,8 +219,8 @@ export default function DashboardPage() {
         <section>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-fg-primary">Sessões Recentes</h2>
-            <Link href="/disciplina/calculo-1" className="text-sm text-accent-primary hover:underline">
-              Iniciar nova sessão →
+            <Link href="/materiais" className="text-sm text-accent-primary hover:underline">
+              Abrir materiais →
             </Link>
           </div>
           <div className="space-y-2">
@@ -241,11 +262,7 @@ export default function DashboardPage() {
             {Object.entries(topicsByDiscipline).map(([disciplineId, disciplineTopics]) => {
               const masteredCount = disciplineTopics.filter(t => t.mastery === 'mastered').length
               const total = disciplineTopics.length
-              const disciplineName = disciplineTopics[0]?.discipline_id === 'calculo-1'
-                ? 'Cálculo I'
-                : disciplineTopics[0]?.discipline_id === 'mat-discreta'
-                ? 'Matemática Discreta'
-                : 'Disciplina'
+              const disciplineName = disciplineNameMap[disciplineId] ?? 'Disciplina'
 
               return (
                 <div key={disciplineId}>
@@ -307,12 +324,12 @@ export default function DashboardPage() {
       {/* Quick Actions */}
       <section className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <QuickAction
-          label="Iniciar Estudo"
+          label="Abrir Materiais"
           icon={<BookOpen className="w-4 h-4" />}
-          href="/disciplina/calculo-1"
+          href="/materiais"
         />
         <QuickAction
-          label="Revisar Flashcards"
+          label="Criar Notas"
           icon={<Plus className="w-4 h-4" />}
           href="/notas"
         />
@@ -340,6 +357,9 @@ export default function DashboardPage() {
               <p className="text-sm text-fg-tertiary mt-1">
                 Erros recentes detectados nos exercícios. Revise-os para melhorar seu desempenho.
               </p>
+              <Link href="/diagnostico" className="mt-3 inline-flex text-sm text-accent-primary hover:underline">
+                Abrir diagnóstico →
+              </Link>
             </div>
           </div>
         </section>
@@ -454,4 +474,8 @@ function LoadingSkeleton() {
       </div>
     </div>
   )
+}
+
+function notesCountLabel(noteCount: number) {
+  return `${noteCount} notas registradas`
 }

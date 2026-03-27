@@ -6,7 +6,6 @@ import { getAssessments } from "@/lib/services/assessments";
 import { getStudySessions, createStudySession } from "@/lib/services/study-sessions";
 import { getDisciplines } from "@/lib/services/disciplines";
 import type { Assessment, StudySession, Discipline, SessionKind } from "@/lib/supabase";
-import { cn } from "@/lib/utils";
 import { Plus, X, AlertCircle } from "lucide-react";
 
 const DAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
@@ -25,13 +24,15 @@ function formatMonth(year: number, month: number) {
 }
 
 function getAssessmentType(type: string): { badge: "danger" | "warning" | "success"; label: string } {
-  const map: Record<string, { badge: "danger" | "warning" | "success"; label: string }> = {
+  const map = {
     prova: { badge: "danger", label: "Prova" },
     trabalho: { badge: "warning", label: "Trabalho" },
     ps: { badge: "warning", label: "PS" },
     g2: { badge: "danger", label: "G2" },
-  };
-  return map[type] || { badge: "default" as any, label: type };
+  } satisfies Record<string, { badge: "danger" | "warning" | "success"; label: string }>;
+
+  const entry = map[type as keyof typeof map];
+  return entry ?? { badge: "warning", label: type };
 }
 
 function daysBetween(a: string, b: string) {
@@ -208,7 +209,6 @@ export default function CalendarioPage() {
                       <div className="mt-1 space-y-1">
                         {dayAssessments.map((a) => {
                           const typeInfo = getAssessmentType(a.type);
-                          const disc = disciplines.find(d => d.id === a.discipline_id);
                           return (
                             <div key={a.id} className="text-[10px]">
                               <Badge variant={typeInfo.badge}>{typeInfo.label}</Badge>

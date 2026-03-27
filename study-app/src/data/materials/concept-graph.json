@@ -1,0 +1,273 @@
+{
+  "nodes": [
+    {
+      "id": "cn-calc1-t01",
+      "label": "Conceito de Função",
+      "disciplineId": "calculo-1",
+      "topicId": "calc1-t01-conceito-funcao",
+      "description": "Definição formal de função, domínio, contradomínio, imagem, representações",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-calc1-t02",
+      "label": "Determinação de Domínio",
+      "disciplineId": "calculo-1",
+      "topicId": "calc1-t02-dominio",
+      "description": "Domínio de funções racionais, irracionais, logarítmicas e compostas",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-calc1-t03",
+      "label": "Função Afim e Quadrática",
+      "disciplineId": "calculo-1",
+      "topicId": "calc1-t03-funcao-afim-quadratica",
+      "description": "Função de 1º e 2º grau, gráficos, raízes, vértice",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-calc1-t04",
+      "label": "Operações e Composição",
+      "disciplineId": "calculo-1",
+      "topicId": "calc1-t04-operacoes-composicao",
+      "description": "Soma, produto, quociente e composição de funções",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-calc1-t05",
+      "label": "Funções Importantes e Transformações",
+      "disciplineId": "calculo-1",
+      "topicId": "calc1-t05-funcoes-importantes",
+      "description": "Funções potência, modular, partes; translações, reflexões, dilatações",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-calc1-t06",
+      "label": "Funções Trigonométricas",
+      "disciplineId": "calculo-1",
+      "topicId": "calc1-t06-trigonometricas",
+      "description": "Seno, cosseno, tangente — período, amplitude, transformações",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-calc1-t07",
+      "label": "Inversa, Exponencial, Logarítmica",
+      "disciplineId": "calculo-1",
+      "topicId": "calc1-t07-inversa-exp-log",
+      "description": "Inversibilidade, bijeção, funções exponenciais e logarítmicas",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-calc1-t08",
+      "label": "Conceito de Limite",
+      "disciplineId": "calculo-1",
+      "topicId": "calc1-t08-limites-conceito",
+      "description": "Noção intuitiva, limites laterais, continuidade",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-calc1-t09",
+      "label": "Cálculo de Limites",
+      "disciplineId": "calculo-1",
+      "topicId": "calc1-t09-calculo-limites",
+      "description": "Propriedades, substituição, indeterminações 0/0, limites trigonométricos",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-calc1-t10",
+      "label": "Limites Infinitos e Assíntotas",
+      "disciplineId": "calculo-1",
+      "topicId": "calc1-t10-limites-infinito",
+      "description": "Limites ±∞, limites no infinito, assíntotas verticais e horizontais",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-calc1-t11",
+      "label": "Definição de Derivada",
+      "disciplineId": "calculo-1",
+      "topicId": "calc1-t11-definicao-derivada",
+      "description": "Derivada como limite, reta tangente, taxa de variação",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-calc1-t12",
+      "label": "Regras de Derivação",
+      "disciplineId": "calculo-1",
+      "topicId": "calc1-t12-regras-derivacao",
+      "description": "Regras básicas, cadeia, derivadas trig/exp/log, derivadas sucessivas",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-calc1-t13",
+      "label": "Regra de L'Hôpital",
+      "disciplineId": "calculo-1",
+      "topicId": "calc1-t13-lhopital",
+      "description": "Formas indeterminadas 0/0 e ∞/∞, aplicação da regra",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-calc1-t14",
+      "label": "Análise de Funções",
+      "disciplineId": "calculo-1",
+      "topicId": "calc1-t14-analise-funcao",
+      "description": "Pontos críticos, crescimento, extremos, concavidade, inflexão",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-calc1-t15",
+      "label": "Otimização",
+      "disciplineId": "calculo-1",
+      "topicId": "calc1-t15-otimizacao",
+      "description": "Modelagem e resolução de problemas de otimização via derivada",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-calc1-t16",
+      "label": "Derivação Implícita",
+      "disciplineId": "calculo-1",
+      "topicId": "calc1-t16-derivacao-implicita",
+      "description": "Derivar equações onde y não é explícito em função de x",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-md-t01",
+      "label": "Conceitos de Conjuntos",
+      "disciplineId": "mat-discreta",
+      "topicId": "md-t01-conjuntos-definicao",
+      "description": "Definição, representação, conjuntos numéricos, intervalos",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-md-t02",
+      "label": "Operações entre Conjuntos",
+      "disciplineId": "mat-discreta",
+      "topicId": "md-t02-relacoes-operacoes-conjuntos",
+      "description": "Inclusão, igualdade, ∪, ∩, −, complemento, De Morgan, P(A), A×B",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-md-t03",
+      "label": "Lógica Proposicional",
+      "disciplineId": "mat-discreta",
+      "topicId": "md-t03-logica-proposicional",
+      "description": "Proposições, conectivos, tabelas-verdade, tautologia/contradição",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-md-t04",
+      "label": "Quantificadores e Demonstrações",
+      "disciplineId": "mat-discreta",
+      "topicId": "md-t04-quantificadores",
+      "description": "∀, ∃, negação de quantificadas, demonstrações simples",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-md-t05",
+      "label": "Relações entre Conjuntos",
+      "disciplineId": "mat-discreta",
+      "topicId": "md-t05-relacoes-entre-conjuntos",
+      "description": "R ⊆ A×B, domínio/imagem, representação, operações com relações",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-md-t06",
+      "label": "Tipos de Relações",
+      "disciplineId": "mat-discreta",
+      "topicId": "md-t06-tipos-relacoes",
+      "description": "Reflexiva, simétrica, transitiva, antissimétrica",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-md-t07",
+      "label": "Funções como Relações",
+      "disciplineId": "mat-discreta",
+      "topicId": "md-t07-funcoes-como-relacoes",
+      "description": "Funções parciais/totais, injetora, sobrejetora, bijetora",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-md-t08",
+      "label": "Relação de Equivalência",
+      "disciplineId": "mat-discreta",
+      "topicId": "md-t08-relacao-equivalencia",
+      "description": "Reflexiva + simétrica + transitiva, classes de equivalência",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-md-t09",
+      "label": "Relação de Ordem",
+      "disciplineId": "mat-discreta",
+      "topicId": "md-t09-relacao-ordem",
+      "description": "Ordem parcial/total, Hasse, elementos notáveis, reticulados",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-md-t10",
+      "label": "Álgebra Booleana",
+      "disciplineId": "mat-discreta",
+      "topicId": "md-t10-algebra-booleana",
+      "description": "Reticulado complementado e distributivo",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-md-t11",
+      "label": "Recursão e Somatórios",
+      "disciplineId": "mat-discreta",
+      "topicId": "md-t11-recursao-somatorios",
+      "description": "Definições recursivas, notação Σ, propriedades",
+      "mastery": "none"
+    },
+    {
+      "id": "cn-md-t12",
+      "label": "Indução Matemática",
+      "disciplineId": "mat-discreta",
+      "topicId": "md-t12-inducao-matematica",
+      "description": "Princípio de indução, provas de somas/desigualdades",
+      "mastery": "none"
+    }
+  ],
+  "edges": [
+    { "source": "cn-calc1-t01", "target": "cn-calc1-t02", "relation": "prerequisite", "weight": 0.9, "description": "Entender função é necessário para determinar domínio" },
+    { "source": "cn-calc1-t01", "target": "cn-calc1-t03", "relation": "prerequisite", "weight": 0.8, "description": "Conceito de função é base para afim/quadrática" },
+    { "source": "cn-calc1-t02", "target": "cn-calc1-t04", "relation": "prerequisite", "weight": 0.7, "description": "Domínio é necessário para operações e composição" },
+    { "source": "cn-calc1-t03", "target": "cn-calc1-t04", "relation": "prerequisite", "weight": 0.6, "description": "Funções básicas são operandas da composição" },
+    { "source": "cn-calc1-t01", "target": "cn-calc1-t05", "relation": "prerequisite", "weight": 0.7, "description": "Conceito de função para funções importantes" },
+    { "source": "cn-calc1-t05", "target": "cn-calc1-t06", "relation": "prerequisite", "weight": 0.6, "description": "Transformações gráficas se aplicam às trigonométricas" },
+    { "source": "cn-calc1-t04", "target": "cn-calc1-t07", "relation": "prerequisite", "weight": 0.7, "description": "Composição é necessária para entender inversa" },
+    { "source": "cn-calc1-t07", "target": "cn-calc1-t08", "relation": "prerequisite", "weight": 0.8, "description": "Conhecer funções elementares é essencial para calcular limites" },
+    { "source": "cn-calc1-t06", "target": "cn-calc1-t08", "relation": "prerequisite", "weight": 0.5, "description": "Funções trig aparecem em limites fundamentais" },
+    { "source": "cn-calc1-t08", "target": "cn-calc1-t09", "relation": "prerequisite", "weight": 0.9, "description": "Conceito de limite é base para técnicas de cálculo" },
+    { "source": "cn-calc1-t09", "target": "cn-calc1-t10", "relation": "prerequisite", "weight": 0.8, "description": "Cálculo de limites finitos precede limites infinitos" },
+    { "source": "cn-calc1-t09", "target": "cn-calc1-t11", "relation": "prerequisite", "weight": 0.9, "description": "Derivada é definida como limite" },
+    { "source": "cn-calc1-t10", "target": "cn-calc1-t11", "relation": "prerequisite", "weight": 0.5, "description": "Limites infinitos dão contexto para derivada" },
+    { "source": "cn-calc1-t11", "target": "cn-calc1-t12", "relation": "prerequisite", "weight": 0.9, "description": "Definição motiva as regras de derivação" },
+    { "source": "cn-calc1-t04", "target": "cn-calc1-t12", "relation": "prerequisite", "weight": 0.7, "description": "Composição é base para regra da cadeia" },
+    { "source": "cn-calc1-t12", "target": "cn-calc1-t13", "relation": "prerequisite", "weight": 0.8, "description": "Regras de derivação são necessárias para L'Hôpital" },
+    { "source": "cn-calc1-t10", "target": "cn-calc1-t13", "relation": "prerequisite", "weight": 0.6, "description": "L'Hôpital resolve limites com formas indeterminadas" },
+    { "source": "cn-calc1-t12", "target": "cn-calc1-t14", "relation": "prerequisite", "weight": 0.9, "description": "Análise de funções usa primeira e segunda derivada" },
+    { "source": "cn-calc1-t14", "target": "cn-calc1-t15", "relation": "prerequisite", "weight": 0.8, "description": "Otimização aplica extremos (análise de funções)" },
+    { "source": "cn-calc1-t12", "target": "cn-calc1-t16", "relation": "prerequisite", "weight": 0.7, "description": "Regras de derivação são usadas na derivação implícita" },
+
+    { "source": "cn-md-t01", "target": "cn-md-t02", "relation": "prerequisite", "weight": 0.9, "description": "Conceitos de conjuntos são base para operações" },
+    { "source": "cn-md-t01", "target": "cn-md-t03", "relation": "prerequisite", "weight": 0.6, "description": "Conjuntos dão contexto para lógica" },
+    { "source": "cn-md-t02", "target": "cn-md-t03", "relation": "corequisite", "weight": 0.7, "description": "Operações de conjuntos correspondem a conectivos lógicos" },
+    { "source": "cn-md-t03", "target": "cn-md-t04", "relation": "prerequisite", "weight": 0.9, "description": "Conectivos são base para quantificadores" },
+    { "source": "cn-md-t02", "target": "cn-md-t05", "relation": "prerequisite", "weight": 0.8, "description": "Produto cartesiano é base para relações" },
+    { "source": "cn-md-t04", "target": "cn-md-t05", "relation": "prerequisite", "weight": 0.5, "description": "Quantificadores usados nas definições formais de relações" },
+    { "source": "cn-md-t05", "target": "cn-md-t06", "relation": "prerequisite", "weight": 0.9, "description": "Relações precedem tipos de relações" },
+    { "source": "cn-md-t06", "target": "cn-md-t07", "relation": "prerequisite", "weight": 0.8, "description": "Tipos de relações levam a funções como relações" },
+    { "source": "cn-md-t06", "target": "cn-md-t08", "relation": "prerequisite", "weight": 0.9, "description": "Propriedades reflexiva+simétrica+transitiva definem equivalência" },
+    { "source": "cn-md-t06", "target": "cn-md-t09", "relation": "prerequisite", "weight": 0.9, "description": "Propriedades reflexiva+antissimétrica+transitiva definem ordem" },
+    { "source": "cn-md-t09", "target": "cn-md-t10", "relation": "prerequisite", "weight": 0.8, "description": "Reticulados levam à álgebra booleana" },
+    { "source": "cn-md-t02", "target": "cn-md-t10", "relation": "prerequisite", "weight": 0.6, "description": "Operações de conjuntos são um exemplo de álgebra booleana" },
+    { "source": "cn-md-t01", "target": "cn-md-t11", "relation": "prerequisite", "weight": 0.5, "description": "Conjuntos numéricos (naturais) são base para recursão" },
+    { "source": "cn-md-t11", "target": "cn-md-t12", "relation": "prerequisite", "weight": 0.9, "description": "Recursão e somatórios são provados por indução" },
+
+    { "source": "cn-calc1-t01", "target": "cn-md-t07", "relation": "analogous_to", "weight": 0.8, "description": "Funções em Cálculo (contínuo) ↔ Funções como relações em Discreta (discreto)" },
+    { "source": "cn-calc1-t02", "target": "cn-md-t05", "relation": "analogous_to", "weight": 0.6, "description": "Domínio/imagem aparece em ambos os contextos" },
+    { "source": "cn-calc1-t07", "target": "cn-md-t07", "relation": "analogous_to", "weight": 0.7, "description": "Inversibilidade: bijeção em ambas as disciplinas" },
+    { "source": "cn-md-t03", "target": "cn-calc1-t08", "relation": "applies_to", "weight": 0.5, "description": "Lógica formal ajuda a entender a definição ε-δ de limite" },
+    { "source": "cn-md-t02", "target": "cn-calc1-t02", "relation": "applies_to", "weight": 0.7, "description": "Operações com intervalos usadas para determinar domínios em Cálculo" },
+    { "source": "cn-md-t04", "target": "cn-calc1-t11", "relation": "applies_to", "weight": 0.4, "description": "Raciocínio formal com quantificadores ajuda na compreensão de derivada como limite" },
+    { "source": "cn-md-t03", "target": "cn-md-t10", "relation": "generalizes", "weight": 0.7, "description": "Álgebra Booleana generaliza a lógica proposicional (portas AND/OR/NOT)" }
+  ]
+}

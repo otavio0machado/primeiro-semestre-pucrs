@@ -1,0 +1,30 @@
+[
+  {
+    "id": "calculo-1",
+    "code": "95300",
+    "name": "Cálculo I",
+    "credits": 4,
+    "semester": "2026/1",
+    "schedule": "3LM | 5LM",
+    "professor": "Daniela Rodrigues",
+    "professorEmail": "daniela@pucrs.br",
+    "totalHours": 60,
+    "ementa": "Caracterização de funções de uma variável. Estudo de domínio e representação gráfica dessas funções. Análise de limites e continuidade. Definições e aplicações de derivadas e diferenciais.",
+    "gradingFormula": "G1 = (P1 + P2 + P3 + MT) / 4",
+    "approvalCriteria": "Frequência >= 75% E (G1 >= 7.0) OU (G1 >= 4.0 E (G1+G2)/2 >= 5.0)"
+  },
+  {
+    "id": "mat-discreta",
+    "code": "95303",
+    "name": "Matemática Discreta",
+    "credits": 4,
+    "semester": "2026/1",
+    "schedule": "2LM | 4LM",
+    "professor": "Karina Benato",
+    "professorEmail": "karina.benato@pucrs.br",
+    "totalHours": 60,
+    "ementa": "Estudo da lógica proposicional e técnicas básicas de demonstração. Álgebra de conjuntos. Estudos e discussão dos conceitos de relações, funções totais e parciais, relações de ordem parcial e total e relações de equivalência. Análise de definições indutivas, recursão e do princípio de indução. Introdução à álgebra Booleana.",
+    "gradingFormula": "G1 = (P1 + P2 + P3 + MT) / 4",
+    "approvalCriteria": "Frequência >= 75% E (G1 >= 7.0) OU (G1 >= 4.0 E (G1+G2)/2 >= 5.0)"
+  }
+]

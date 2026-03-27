@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
+import { getCurriculumDocuments } from '@/lib/materials/catalog'
 import {
   getDiscipline,
   getModulesByDiscipline,
@@ -21,12 +22,7 @@ import { ScoreDisplay } from '@/components/ui/score-display'
 import { ProgressBar } from '@/components/ui/progress-bar'
 import { Badge } from '@/components/ui/badge'
 import {
-  cn,
-  masteryColor,
-  masteryTextColor,
   formatScore,
-  formatCountdown,
-  countdownColor,
 } from '@/lib/utils'
 import {
   ArrowLeft,
@@ -61,6 +57,8 @@ export default function DisciplinePage() {
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set())
   const [scoreInputs, setScoreInputs] = useState<Record<string, string>>({})
   const [editingAssessment, setEditingAssessment] = useState<string | null>(null)
+
+  const firstMaterial = getCurriculumDocuments(id)[0] ?? null
 
   // Load data
   useEffect(() => {
@@ -480,14 +478,20 @@ export default function DisciplinePage() {
               Ações Rápidas
             </h3>
             <div className="space-y-2">
-              <button className="w-full flex items-center justify-center gap-2 rounded-md px-3 py-2 bg-accent-info text-bg-primary text-sm font-medium hover:opacity-90 transition-opacity">
+              <Link
+                href={firstMaterial ? `/materiais/${firstMaterial.id}` : '/materiais'}
+                className="w-full flex items-center justify-center gap-2 rounded-md px-3 py-2 bg-accent-info text-bg-primary text-sm font-medium hover:opacity-90 transition-opacity"
+              >
                 <Play size={14} />
-                Iniciar Sessão
-              </button>
-              <button className="w-full flex items-center justify-center gap-2 rounded-md px-3 py-2 border border-border-default text-fg-secondary hover:bg-bg-secondary transition-colors text-sm font-medium">
+                Estudar pelos materiais
+              </Link>
+              <Link
+                href={firstMaterial ? `/materiais/${firstMaterial.id}` : '/materiais'}
+                className="w-full flex items-center justify-center gap-2 rounded-md px-3 py-2 border border-border-default text-fg-secondary hover:bg-bg-secondary transition-colors text-sm font-medium"
+              >
                 <Plus size={14} />
-                Nova Anotação
-              </button>
+                Gerar anotação com fonte
+              </Link>
             </div>
           </div>
         </div>

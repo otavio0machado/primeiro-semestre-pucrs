@@ -8,6 +8,7 @@ import {
   BookOpen,
   Dumbbell,
   Calendar,
+  Files,
   StickyNote,
   Network,
   GraduationCap,
@@ -18,12 +19,19 @@ import {
   Keyboard,
   Bot,
 } from "lucide-react";
+import { getCurriculumDisciplines } from "@/lib/materials/catalog";
 import { cn } from "@/lib/utils";
+
+const disciplineNavItems = getCurriculumDisciplines().map((discipline) => ({
+  href: `/disciplina/${discipline.id}`,
+  label: discipline.name,
+  icon: BookOpen,
+  shortcut: "",
+}));
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard, shortcut: "⌘1" },
-  { href: "/disciplina/calculo-1", label: "Cálculo I", icon: BookOpen, shortcut: "" },
-  { href: "/disciplina/mat-discreta", label: "Mat. Discreta", icon: BookOpen, shortcut: "" },
+  { href: "/materiais", label: "Materiais", icon: Files, shortcut: "⌘2" },
   { href: "/provas", label: "Provas", icon: GraduationCap, shortcut: "⌘4" },
   { href: "/diagnostico", label: "Diagnóstico", icon: Stethoscope, shortcut: "⌘5" },
   { href: "/mapa", label: "Mapa Conceitual", icon: Network, shortcut: "⌘6" },
@@ -70,7 +78,7 @@ export function Sidebar() {
             </span>
           </div>
         )}
-        {navItems.slice(1, 3).map((item) => (
+        {disciplineNavItems.map((item) => (
           <NavItem
             key={item.href}
             {...item}
@@ -87,7 +95,7 @@ export function Sidebar() {
           </div>
         )}
         {collapsed && <div className="my-3 border-t border-border-default" />}
-        {[navItems[0], ...navItems.slice(3)].map((item) => (
+        {navItems.map((item) => (
           <NavItem
             key={item.href}
             {...item}
