@@ -29,31 +29,38 @@ export default function JarvisPage() {
   const [activeConversation, setActiveConversation] = useState<string | null>(null)
   const [totalCost, setTotalCost] = useState(0)
   const [loadingConversations, setLoadingConversations] = useState(true)
+  const [conversationsError, setConversationsError] = useState<string | null>(null)
   // Force chat remount when switching conversations
   const [chatKey, setChatKey] = useState(0)
+
+  const loadConversations = useCallback(async () => {
+    try {
+      setLoadingConversations(true)
+      setConversationsError(null)
+      const data = await getConversations(50)
+      setConversations(data)
+      // Auto-open latest conversation on first load
+      if (data.length > 0) {
+        setActiveConversation((prev) => prev ?? data[0].id)
+      }
+    } catch (err) {
+      console.error('Failed to load Jarvis conversations:', err)
+      setConversationsError('Não foi possível carregar o histórico de conversas.')
+    } finally {
+      setLoadingConversations(false)
+    }
+  }, [])
 
   // Load conversations from Supabase on mount
   useEffect(() => {
     loadConversations()
-  }, [])
+  }, [loadConversations])
 
   // Recalculate total cost whenever conversations change
   useEffect(() => {
     const cost = conversations.reduce((sum, c) => sum + Number(c.total_cost_usd || 0), 0)
     setTotalCost(cost)
   }, [conversations])
-
-  const loadConversations = async () => {
-    try {
-      setLoadingConversations(true)
-      const data = await getConversations(50)
-      setConversations(data)
-    } catch {
-      // silently fail
-    } finally {
-      setLoadingConversations(false)
-    }
-  }
 
   const handleNewConversation = async (title: string) => {
     try {
@@ -184,6 +191,11 @@ export default function JarvisPage() {
 
         {/* Conversation History */}
         <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1.5">
+          {conversationsError && (
+            <div className="mb-3 px-3 py-2 rounded-lg border border-red-500/30 bg-red-500/10">
+              <p className="text-[11px] text-red-300">{conversationsError}</p>
+            </div>
+          )}
           {loadingConversations ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="w-5 h-5 animate-spin text-fg-muted" />

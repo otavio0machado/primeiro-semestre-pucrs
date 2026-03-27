@@ -261,13 +261,18 @@ export function JarvisChat({
       return
     }
     let cancelled = false
+    setError(null)
     setLoadingHistory(true)
     getMessages(activeConvId)
       .then((msgs) => {
         if (!cancelled) setMessages(msgs)
       })
-      .catch(() => {
-        // silently fail — conversation may have been deleted
+      .catch((err) => {
+        if (!cancelled) {
+          console.error('Failed to load Jarvis messages:', err)
+          setError('Não foi possível carregar as mensagens desta conversa.')
+          setMessages([])
+        }
       })
       .finally(() => {
         if (!cancelled) setLoadingHistory(false)
