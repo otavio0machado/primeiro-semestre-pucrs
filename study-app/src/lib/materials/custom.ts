@@ -62,7 +62,9 @@ async function ensureCustomCatalogFile(): Promise<void> {
 
 async function writeCustomMaterialDocuments(documents: StoredCustomMaterialRecord[]): Promise<void> {
   await ensureCustomCatalogFile();
-  await fs.writeFile(CUSTOM_CATALOG_PATH, `${JSON.stringify(documents, null, 2)}\n`, "utf8");
+  const tmpPath = `${CUSTOM_CATALOG_PATH}.${Date.now()}.tmp`;
+  await fs.writeFile(tmpPath, `${JSON.stringify(documents, null, 2)}\n`, "utf8");
+  await fs.rename(tmpPath, CUSTOM_CATALOG_PATH);
 }
 
 function sanitizeFilename(filename: string): string {

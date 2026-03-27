@@ -235,7 +235,25 @@ export interface GenerateNoteGraphOutput {
   explanation: string;
 }
 
-// ── 8. generateExercises ──
+// ── 9. generateNoteInteractive ──
+
+export interface GenerateNoteInteractiveInput {
+  request: string;
+  noteContent: string;
+  courseName?: string;
+  topicName?: string;
+  frameHint?: "auto" | "phone" | "canvas";
+}
+
+export interface GenerateNoteInteractiveOutput {
+  title: string;
+  html: string;
+  explanation: string;
+  frame: "phone" | "canvas";
+  height: number;
+}
+
+// ── 10. generateExercises ──
 
 export interface GenerateExercisesInput {
   topicName: string;

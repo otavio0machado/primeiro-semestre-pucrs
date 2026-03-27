@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { getCurriculumDisciplines, getCurriculumModules, getCurriculumTopics } from "@/lib/materials/catalog";
-import type { MaterialDocument } from "@/lib/materials/types";
+import { MATERIAL_TYPE_LABELS, type MaterialDocument } from "@/lib/materials/types";
 import {
   groupMaterialDocumentsByDiscipline,
   listCustomMaterialDocuments,
@@ -10,14 +10,6 @@ import {
 import { MaterialUploadPanel } from "./material-upload-panel";
 
 export const dynamic = "force-dynamic";
-
-const typeLabels: Record<string, string> = {
-  plano_ensino: "Plano de ensino",
-  material_aula: "Material de aula",
-  lista_exercicios: "Lista oficial",
-  exemplos_resolvidos: "Exemplos resolvidos",
-  livro_texto: "Livro-base",
-};
 
 export default async function MateriaisPage() {
   const disciplines = getCurriculumDisciplines();
@@ -266,7 +258,7 @@ function DocumentCard({
         <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-start">
           <div className="min-w-0 space-y-2">
             <span className="inline-flex rounded-full border border-border-default px-2 py-0.5 text-[11px] uppercase tracking-wider text-fg-muted">
-              {typeLabels[document.type]}
+              {MATERIAL_TYPE_LABELS[document.type]}
             </span>
             <h3 className="text-lg font-medium text-fg-primary [overflow-wrap:anywhere]">
               {document.filename}

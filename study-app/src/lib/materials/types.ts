@@ -5,6 +5,14 @@ export type MaterialDocumentType =
   | "exemplos_resolvidos"
   | "livro_texto";
 
+export const MATERIAL_TYPE_LABELS: Record<MaterialDocumentType, string> = {
+  plano_ensino: "Plano de ensino",
+  material_aula: "Material de aula",
+  lista_exercicios: "Lista oficial",
+  exemplos_resolvidos: "Exemplos resolvidos",
+  livro_texto: "Livro-base",
+};
+
 export type MaterialRelevance = "critical" | "high" | "medium" | "low";
 export type MaterialDocumentSource = "seed" | "custom";
 

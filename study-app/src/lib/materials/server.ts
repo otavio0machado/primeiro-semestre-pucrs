@@ -1,6 +1,6 @@
 import "server-only";
 
-import fs from "node:fs";
+import fs from "node:fs/promises";
 import path from "node:path";
 import { unstable_noStore as noStore } from "next/cache";
 import extractsJson from "@/data/materials/document-extracts.json";
@@ -18,7 +18,13 @@ import type { DocumentExtract, MaterialDocument } from "@/lib/materials/types";
 
 const extractMap = documentExtractToMap(extractsJson as DocumentExtract[]);
 
-function resolveDocumentPath(relativeOrFilename?: string | null): string | null {
+const ALLOWED_ROOTS = [
+  path.resolve(process.cwd()),
+  path.resolve(process.cwd(), "Documentos"),
+  path.resolve(process.cwd(), "..", "Documentos"),
+];
+
+async function resolveDocumentPath(relativeOrFilename?: string | null): Promise<string | null> {
   if (!relativeOrFilename) {
     return null;
   }
@@ -29,9 +35,19 @@ function resolveDocumentPath(relativeOrFilename?: string | null): string | null 
     path.resolve(process.cwd(), "..", "Documentos", relativeOrFilename),
   ];
 
-  for (const candidate of candidates) {
-    if (fs.existsSync(candidate)) {
+  for (let i = 0; i < candidates.length; i++) {
+    const candidate = candidates[i];
+    const root = ALLOWED_ROOTS[i];
+
+    if (!candidate.startsWith(root + path.sep) && candidate !== root) {
+      continue;
+    }
+
+    try {
+      await fs.access(candidate);
       return candidate;
+    } catch {
+      continue;
     }
   }
 
@@ -50,8 +66,8 @@ function sortMaterialDocuments(left: MaterialDocument, right: MaterialDocument):
   return left.filename.localeCompare(right.filename, "pt-BR");
 }
 
-function resolveMaterialFilePath(document: MaterialDocument): string | null {
-  return resolveDocumentPath(document.storagePath) ?? resolveDocumentPath(document.filename);
+async function resolveMaterialFilePath(document: MaterialDocument): Promise<string | null> {
+  return (await resolveDocumentPath(document.storagePath)) ?? (await resolveDocumentPath(document.filename));
 }
 
 export function getMaterialExtract(documentId: string): DocumentExtract | null {
@@ -120,7 +136,7 @@ export async function getMaterialFileAsset(documentId: string): Promise<{
     return null;
   }
 
-  const filePath = resolveMaterialFilePath(document);
+  const filePath = await resolveMaterialFilePath(document);
   if (!filePath) {
     return null;
   }
@@ -144,7 +160,7 @@ export async function buildMaterialSourceContent(documentId: string): Promise<{
   const discipline = getCurriculumDiscipline(document.disciplineId);
   const extract = getMaterialExtract(documentId);
   const topicNames = getDocumentTopicNames(document);
-  const fileAvailable = Boolean(resolveMaterialFilePath(document));
+  const fileAvailable = Boolean(await resolveMaterialFilePath(document));
   const preview = extract?.preview?.trim();
 
   const content = [
@@ -195,7 +211,7 @@ export async function getMaterialDocumentView(documentId: string) {
     topicNames: topicDetails.map((topic) => topic.name),
     topicDetails,
     extract: getMaterialExtract(document.id),
-    fileAvailable: Boolean(resolveMaterialFilePath(document)),
+    fileAvailable: Boolean(await resolveMaterialFilePath(document)),
     fileUrl: `/api/materials/file/${document.id}`,
   };
 }

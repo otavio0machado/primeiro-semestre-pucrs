@@ -23,6 +23,8 @@ REGRAS:
 - Não invente conceitos fora do contexto dado.
 - Se houver fórmulas, represente a relação conceitual, não tente forçar LaTeX no Mermaid.
 - Nunca adicione explicação, observação ou texto narrativo dentro do campo "mermaid".
+- Se o pedido descrever interface, mockup, dashboard, tela de celular, app ou layout visual, converta isso para uma estrutura conceitual simples em vez de tentar simular UI detalhada.
+- Prefira poucos nós e legibilidade alta. Evite diagramas gigantescos que fiquem ilegíveis ao serem inseridos na nota.
 - Em quadrantChart, use a sintaxe oficial sem aspas nos pontos: \`Ponto A: [0.75, 0.80]\`.
 - Em quadrantChart, os valores x e y devem ficar entre 0 e 1.
 - O campo "mermaid" deve começar diretamente com a definição Mermaid, por exemplo:

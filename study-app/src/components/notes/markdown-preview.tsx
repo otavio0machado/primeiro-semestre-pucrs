@@ -6,6 +6,7 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import type { ComponentPropsWithoutRef } from "react";
 import "katex/dist/katex.min.css";
+import { InteractiveArtifactPreview } from "./interactive-artifact-preview";
 import { MermaidDiagram } from "./mermaid-diagram";
 
 export function MarkdownPreview({ content }: { content: string }) {
@@ -30,6 +31,17 @@ export function MarkdownPreview({ content }: { content: string }) {
 
             if (language === "mermaid") {
               return <MermaidDiagram chart={code} />;
+            }
+
+            if (language === "interactive") {
+              return (
+                <InteractiveArtifactPreview
+                  html={code}
+                  frame="canvas"
+                  title="Bloco interativo"
+                  preferredHeight={720}
+                />
+              );
             }
 
             if (inline) {

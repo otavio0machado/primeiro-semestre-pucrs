@@ -291,6 +291,8 @@ function FlashcardReviewMode({
 
   const [loading, setLoading] = useState(false)
 
+  if (cards.length === 0) return null
+
   const currentCard = cards[state.cardIndex]
   const isLastCard = state.cardIndex === cards.length - 1
 
@@ -561,6 +563,8 @@ export default function NotasPage() {
 
   // ─── Filtering ───────────────────────────────────────────────
 
+  const todayStr = useMemo(() => new Date().toISOString().split('T')[0], [])
+
   const filteredFlashcards = useMemo(() => {
     let result = flashcards
 
@@ -728,6 +732,7 @@ export default function NotasPage() {
             onSaveNote={handleSaveNote}
             onDeleteNote={handleDeleteNote}
             onToast={showToast}
+            onRefreshData={loadData}
           />
         )}
 
@@ -807,8 +812,7 @@ export default function NotasPage() {
                   ) : (
                     <div className="grid grid-cols-3 gap-3 pr-3">
                       {filteredFlashcards.map(card => {
-                        const today = new Date().toISOString().split('T')[0]
-                        const isDue = card.next_review <= today
+                        const isDue = card.next_review <= todayStr
 
                         return (
                           <div

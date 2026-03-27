@@ -42,6 +42,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Apenas arquivos PDF são aceitos." }, { status: 400 });
     }
 
+    const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { error: "O arquivo excede o limite de 50 MB." },
+        { status: 413 },
+      );
+    }
+
     const disciplineId = readTextField(formData, "disciplineId");
     const description = readTextField(formData, "description");
     const usage = readTextField(formData, "usage");
@@ -131,9 +139,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("materials upload route error", error);
     return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Erro interno ao enviar material.",
-      },
+      { error: "Erro interno ao enviar material." },
       { status: 500 },
     );
   }

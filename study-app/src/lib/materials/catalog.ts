@@ -174,7 +174,7 @@ export function seedConceptGraphToRows(
       module_id: getCurriculumTopic(node.topicId)?.moduleId ?? "",
       description: node.description,
       latex: null,
-      x: node.disciplineId === "calculo-1" ? 220 + positionIndex * 90 : 220 + positionIndex * 90,
+      x: 220 + positionIndex * 90,
       y: node.disciplineId === "calculo-1" ? 140 : 340,
       created_at: "2026-01-01T00:00:00.000Z",
       mastery: (topic?.mastery ?? "none") as Topic["mastery"],

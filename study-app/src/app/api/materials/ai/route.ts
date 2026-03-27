@@ -212,9 +212,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("materials ai route error", error);
     return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Erro interno ao processar material",
-      },
+      { error: "Erro interno ao processar material." },
       { status: 500 },
     );
   }

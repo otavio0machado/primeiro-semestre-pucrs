@@ -1,17 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getMaterialDocumentView } from "@/lib/materials/server";
+import { MATERIAL_TYPE_LABELS } from "@/lib/materials/types";
 import { MaterialActions } from "./material-actions";
 
 export const dynamic = "force-dynamic";
-
-const typeLabels: Record<string, string> = {
-  plano_ensino: "Plano de ensino",
-  material_aula: "Material de aula",
-  lista_exercicios: "Lista oficial",
-  exemplos_resolvidos: "Exemplos resolvidos",
-  livro_texto: "Livro-base",
-};
 
 export default async function MaterialDetailPage({
   params,
@@ -37,7 +30,7 @@ export default async function MaterialDetailPage({
             <div className="max-w-3xl space-y-4">
               <div className="flex flex-wrap gap-2">
                 <span className="inline-flex rounded-full border border-border-default px-2 py-0.5 text-[11px] uppercase tracking-wider text-fg-muted">
-                  {typeLabels[document.type]}
+                  {MATERIAL_TYPE_LABELS[document.type]}
                 </span>
                 <span className="inline-flex rounded-full bg-bg-surface px-2 py-0.5 text-[11px] uppercase tracking-wider text-fg-secondary">
                   {document.disciplineName}

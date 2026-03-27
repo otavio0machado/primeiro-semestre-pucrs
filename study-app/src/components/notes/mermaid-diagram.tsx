@@ -2,10 +2,15 @@
 
 import mermaid from "mermaid";
 import { AlertCircle, Minus, Plus, RotateCcw } from "lucide-react";
-import { useEffect, useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { normalizeMermaidChart } from "@/lib/notes/mermaid";
 
 let initialized = false;
+
+interface SvgDimensions {
+  width: number;
+  height: number;
+}
 
 function ensureMermaid() {
   if (initialized) return;
@@ -18,13 +23,50 @@ function ensureMermaid() {
   initialized = true;
 }
 
+function parseSvgDimension(value: string | null) {
+  if (!value) return null;
+  const parsed = Number.parseFloat(value.replace(/[^\d.]/g, ""));
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function extractSvgDimensions(svgMarkup: string): SvgDimensions | null {
+  if (typeof window === "undefined") return null;
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(svgMarkup, "image/svg+xml");
+  const svg = doc.querySelector("svg");
+
+  if (!svg) return null;
+
+  const viewBox = svg.getAttribute("viewBox");
+  if (viewBox) {
+    const [, , width, height] = viewBox.split(/\s+/).map(Number);
+    if (Number.isFinite(width) && Number.isFinite(height) && width > 0 && height > 0) {
+      return { width, height };
+    }
+  }
+
+  const width = parseSvgDimension(svg.getAttribute("width"));
+  const height = parseSvgDimension(svg.getAttribute("height"));
+
+  if (width && height) {
+    return { width, height };
+  }
+
+  return null;
+}
+
 export function MermaidDiagram({ chart }: { chart: string }) {
   const id = useId().replace(/:/g, "");
   const renderId = useMemo(() => `mermaid-${id}`, [id]);
   const normalizedChart = useMemo(() => normalizeMermaidChart(chart), [chart]);
   const [svg, setSvg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [scale, setScale] = useState(1);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [availableHeight, setAvailableHeight] = useState(520);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
+  const dimensions = useMemo(() => (svg ? extractSvgDimensions(svg) : null), [svg]);
 
   useEffect(() => {
     let cancelled = false;
@@ -55,6 +97,50 @@ export function MermaidDiagram({ chart }: { chart: string }) {
     };
   }, [normalizedChart, renderId]);
 
+  useEffect(() => {
+    function updateAvailableHeight() {
+      setAvailableHeight(Math.round(Math.min(window.innerHeight * 0.62, 760)));
+    }
+
+    updateAvailableHeight();
+    window.addEventListener("resize", updateAvailableHeight);
+    return () => window.removeEventListener("resize", updateAvailableHeight);
+  }, []);
+
+  useEffect(() => {
+    const element = viewportRef.current;
+    if (!element) return;
+
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      setContainerWidth(entry.contentRect.width);
+    });
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  const fitScale = useMemo(() => {
+    if (!dimensions || !containerWidth) return 1;
+
+    return Math.min(Math.max((containerWidth - 32) / dimensions.width, 0.35), 3);
+  }, [containerWidth, dimensions]);
+
+  const scale = useMemo(
+    () => Math.min(Math.max(fitScale * zoomLevel, 0.18), 4),
+    [fitScale, zoomLevel],
+  );
+
+  const viewportHeight = useMemo(() => {
+    if (!dimensions) {
+      return 320;
+    }
+
+    const fittedHeight = dimensions.height * Math.min(scale, 1) + 32;
+    return Math.round(Math.max(280, Math.min(fittedHeight, availableHeight)));
+  }, [availableHeight, dimensions, scale]);
+
   if (error) {
     return (
       <div className="rounded-xl border border-accent-danger/30 bg-accent-danger/5 p-4">
@@ -77,24 +163,32 @@ export function MermaidDiagram({ chart }: { chart: string }) {
       <div className="flex items-center justify-between border-b border-border-default px-3 py-2">
         <p className="text-xs font-medium uppercase tracking-widest text-fg-muted">Gráfico</p>
         <div className="flex items-center gap-1">
-          <ControlButton onClick={() => setScale((value) => Math.max(0.6, value - 0.1))}>
+          <ControlButton onClick={() => setZoomLevel((value) => Math.max(0.45, value / 1.15))}>
             <Minus className="h-3 w-3" />
           </ControlButton>
-          <ControlButton onClick={() => setScale(1)}>
+          <ControlButton onClick={() => setZoomLevel(1)}>
             <RotateCcw className="h-3 w-3" />
           </ControlButton>
-          <ControlButton onClick={() => setScale((value) => Math.min(2.4, value + 0.1))}>
+          <ControlButton onClick={() => setZoomLevel((value) => Math.min(3.2, value * 1.15))}>
             <Plus className="h-3 w-3" />
           </ControlButton>
         </div>
       </div>
 
-      <div className="overflow-auto p-4">
+      <div
+        ref={viewportRef}
+        className="overflow-auto p-4"
+        style={{ height: `${viewportHeight}px` }}
+      >
         <div
-          className="origin-top-left transition-transform"
-          style={{ transform: `scale(${scale})`, width: "max-content" }}
-          dangerouslySetInnerHTML={{ __html: svg ?? "" }}
-        />
+          className="flex min-h-full min-w-full items-start justify-center"
+        >
+          <div
+            className="origin-top-left transition-transform"
+            style={{ transform: `scale(${scale})`, width: "max-content" }}
+            dangerouslySetInnerHTML={{ __html: svg ?? "" }}
+          />
+        </div>
       </div>
     </div>
   );

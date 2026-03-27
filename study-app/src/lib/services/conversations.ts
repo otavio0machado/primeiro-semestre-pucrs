@@ -118,10 +118,12 @@ export async function saveMessage(
   conversationId: string,
   msg: JarvisMessage
 ): Promise<void> {
+  const messageId = isUuid(msg.id) ? msg.id : undefined
+
   const { error } = await supabase
     .from('jarvis_messages')
     .insert({
-      id: msg.id.length > 36 ? undefined : msg.id, // let DB generate if id is not uuid
+      id: messageId,
       conversation_id: conversationId,
       role: msg.role,
       content: msg.content,
@@ -168,4 +170,10 @@ function rowToJarvisMessage(row: MessageRow): JarvisMessage {
     mixSources: row.mix_sources as unknown as JarvisMessage['mixSources'],
     timestamp: new Date(row.created_at).getTime(),
   }
+}
+
+function isUuid(value: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+    value
+  )
 }
