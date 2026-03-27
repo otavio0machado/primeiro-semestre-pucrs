@@ -116,14 +116,23 @@ function sortCustomDocuments(
 }
 
 export async function readCustomMaterialDocuments(): Promise<StoredCustomMaterialRecord[]> {
-  await ensureCustomCatalogFile();
+  try {
+    // In serverless environments (Vercel), the filesystem is read-only.
+    // If the catalog file doesn't exist, return empty instead of trying to create it.
+    if (!(await pathExists(CUSTOM_CATALOG_PATH))) {
+      return [];
+    }
 
-  const raw = await fs.readFile(CUSTOM_CATALOG_PATH, "utf8");
-  const parsed = JSON.parse(raw) as StoredCustomMaterialRecord[];
+    const raw = await fs.readFile(CUSTOM_CATALOG_PATH, "utf8");
+    const parsed = JSON.parse(raw) as StoredCustomMaterialRecord[];
 
-  return parsed
-    .filter((document) => document.source === "custom" && Boolean(document.storagePath))
-    .sort(sortCustomDocuments);
+    return parsed
+      .filter((document) => document.source === "custom" && Boolean(document.storagePath))
+      .sort(sortCustomDocuments);
+  } catch {
+    // Gracefully handle read-only filesystem or missing paths
+    return [];
+  }
 }
 
 export async function createCustomMaterialDocument(
