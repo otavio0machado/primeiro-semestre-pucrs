@@ -16,7 +16,7 @@ export async function GET(request: Request) {
       if (user) {
         const { data: profile } = await supabase
           .from('user_profiles')
-          .select('onboarding_completed')
+          .select('onboarding_completed, onboarding_step')
           .eq('id', user.id)
           .single()
 
