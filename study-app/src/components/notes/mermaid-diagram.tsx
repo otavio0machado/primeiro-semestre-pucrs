@@ -4,6 +4,7 @@ import mermaid from "mermaid";
 import { AlertCircle, Minus, Plus, RotateCcw } from "lucide-react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { normalizeMermaidChart } from "@/lib/notes/mermaid";
+import { cn } from "@/lib/utils";
 
 let initialized = false;
 
@@ -63,6 +64,7 @@ export function MermaidDiagram({ chart }: { chart: string }) {
   const [svg, setSvg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [hovered, setHovered] = useState(false);
   const [availableHeight, setAvailableHeight] = useState(520);
   const [containerWidth, setContainerWidth] = useState(0);
   const viewportRef = useRef<HTMLDivElement | null>(null);
@@ -138,12 +140,12 @@ export function MermaidDiagram({ chart }: { chart: string }) {
     }
 
     const fittedHeight = dimensions.height * Math.min(scale, 1) + 32;
-    return Math.round(Math.max(280, Math.min(fittedHeight, availableHeight)));
+    return Math.round(Math.max(200, Math.min(fittedHeight, availableHeight)));
   }, [availableHeight, dimensions, scale]);
 
   if (error) {
     return (
-      <div className="rounded-xl border border-accent-danger/30 bg-accent-danger/5 p-4">
+      <div className="rounded-xl border border-accent-danger/20 bg-accent-danger/5 p-4">
         <div className="flex items-start gap-2 text-accent-danger">
           <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
           <div className="space-y-2">
@@ -159,30 +161,38 @@ export function MermaidDiagram({ chart }: { chart: string }) {
   }
 
   return (
-    <div className="rounded-xl border border-border-default bg-bg-primary">
-      <div className="flex items-center justify-between border-b border-border-default px-3 py-2">
-        <p className="text-xs font-medium uppercase tracking-widest text-fg-muted">Gráfico</p>
-        <div className="flex items-center gap-1">
-          <ControlButton onClick={() => setZoomLevel((value) => Math.max(0.45, value / 1.15))}>
-            <Minus className="h-3 w-3" />
-          </ControlButton>
-          <ControlButton onClick={() => setZoomLevel(1)}>
-            <RotateCcw className="h-3 w-3" />
-          </ControlButton>
-          <ControlButton onClick={() => setZoomLevel((value) => Math.min(3.2, value * 1.15))}>
-            <Plus className="h-3 w-3" />
-          </ControlButton>
-        </div>
+    <div
+      className="relative"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {/* Zoom controls — float in top-right on hover */}
+      <div
+        className={cn(
+          "absolute right-2 top-2 z-10 flex items-center gap-0.5 rounded-lg border border-border-default/50 bg-bg-primary/90 p-0.5 shadow-md backdrop-blur-sm transition-all duration-200",
+          hovered
+            ? "pointer-events-auto opacity-100"
+            : "pointer-events-none opacity-0",
+        )}
+      >
+        <ZoomButton onClick={() => setZoomLevel((v) => Math.max(0.45, v / 1.15))}>
+          <Minus className="h-3 w-3" />
+        </ZoomButton>
+        <ZoomButton onClick={() => setZoomLevel(1)}>
+          <RotateCcw className="h-3 w-3" />
+        </ZoomButton>
+        <ZoomButton onClick={() => setZoomLevel((v) => Math.min(3.2, v * 1.15))}>
+          <Plus className="h-3 w-3" />
+        </ZoomButton>
       </div>
 
+      {/* Diagram viewport — no box, just the content */}
       <div
         ref={viewportRef}
-        className="overflow-auto p-4"
+        className="overflow-auto"
         style={{ height: `${viewportHeight}px` }}
       >
-        <div
-          className="flex min-h-full min-w-full items-start justify-center"
-        >
+        <div className="flex min-h-full min-w-full items-start justify-center p-2">
           <div
             className="origin-top-left transition-transform"
             style={{ transform: `scale(${scale})`, width: "max-content" }}
@@ -194,7 +204,7 @@ export function MermaidDiagram({ chart }: { chart: string }) {
   );
 }
 
-function ControlButton({
+function ZoomButton({
   children,
   onClick,
 }: {
@@ -204,7 +214,7 @@ function ControlButton({
   return (
     <button
       onClick={onClick}
-      className="rounded-md border border-border-default bg-bg-secondary p-1.5 text-fg-secondary transition-colors hover:bg-bg-tertiary hover:text-fg-primary"
+      className="rounded-md p-1.5 text-fg-muted transition-colors hover:bg-bg-secondary hover:text-fg-primary"
       type="button"
     >
       {children}
