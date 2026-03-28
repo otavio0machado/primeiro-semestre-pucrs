@@ -96,6 +96,21 @@ export async function POST(request: Request) {
           .eq('id', documentId)
         return NextResponse.json({ ok: false, status: 'extraction_failed', error: String(e) })
       }
+    } else if (doc.mime_type === 'text/html' || doc.mime_type === 'application/xhtml+xml' || doc.file_name?.endsWith('.html') || doc.file_name?.endsWith('.htm')) {
+      // Strip HTML tags, keep text content
+      const html = buffer.toString('utf-8')
+      extractedText = html
+        .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+        .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#\d+;/g, '')
+        .replace(/\s{2,}/g, ' ')
+        .trim()
     } else if (doc.mime_type.startsWith('image/')) {
       extractedText = '[Imagem — OCR pendente]'
     } else {

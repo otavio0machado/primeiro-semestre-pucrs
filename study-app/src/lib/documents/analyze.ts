@@ -126,9 +126,14 @@ REGRAS:
 - Pré-requisitos devem ser inferidos da lógica conceitual
 - Dificuldade: 1=básico, 2=fácil, 3=médio, 4=difícil, 5=avançado
 - Se informação conflitar entre documentos, priorize: ementa > slides > livro
-- Agrupe tópicos em módulos lógicos (3-6 tópicos por módulo)
+- Agrupe tópicos em módulos lógicos (3-5 tópicos por módulo)
+- MÁXIMO 4 módulos por disciplina, MÁXIMO 5 tópicos por módulo
+- MÁXIMO 5 assessments por disciplina
+- Nomes curtos para tópicos (max 40 caracteres)
+- Pré-requisitos: use APENAS nomes de tópicos já listados na mesma disciplina
 - Se nenhum documento for fornecido, gere um currículo padrão para o curso/semestre
-- Cada disciplina deve ter pelo menos 2 módulos e 5 tópicos`
+- Cada disciplina deve ter pelo menos 2 módulos e 5 tópicos
+- RESPONDA COM O JSON MAIS COMPACTO POSSÍVEL, sem espaços desnecessários`
 
   const userMessage = documentsContext.length > 0
     ? `DOCUMENTOS ANALISADOS:\n\n${documentsContext}`
@@ -139,7 +144,7 @@ REGRAS:
       service: 'bootstrap-curriculum',
       system,
       userMessage,
-      maxTokens: 4096,
+      maxTokens: 8192,
       temperature: 0.2,
     },
     parseJSON<{ disciplines: BootstrapResult['disciplines'] }>

@@ -54,7 +54,7 @@ export default function OnboardingDocumentosPage() {
       }
 
       const { document } = await uploadRes.json();
-      updateFile(tempId, { id: document.id, status: "processing" });
+      updateFile(tempId, { status: "processing" });
 
       // Step 2: Extract text (fast, no AI)
       const processRes = await fetch("/api/documents/process", {
@@ -178,7 +178,7 @@ export default function OnboardingDocumentosPage() {
           Arraste arquivos aqui ou clique para selecionar
         </p>
         <p className="text-xs text-fg-muted">
-          PDF, DOCX, PPTX, PNG, JPG — ate 50MB por arquivo
+          PDF, DOCX, PPTX, HTML, PNG, JPG — ate 50MB por arquivo
         </p>
         <div className="flex flex-wrap justify-center gap-2 text-xs text-fg-muted">
           <span className="rounded-full border border-border-default px-2 py-1">
@@ -201,7 +201,7 @@ export default function OnboardingDocumentosPage() {
           ref={fileInputRef}
           type="file"
           multiple
-          accept=".pdf,.docx,.pptx,.png,.jpg,.jpeg"
+          accept=".pdf,.docx,.pptx,.html,.htm,.png,.jpg,.jpeg"
           className="hidden"
           onChange={(e) => handleFiles(e.target.files)}
         />

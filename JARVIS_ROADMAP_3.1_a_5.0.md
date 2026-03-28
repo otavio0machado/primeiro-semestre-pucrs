@@ -1070,51 +1070,730 @@ A/B testing automatizado em explicações, exercícios, timings de revisão. O J
 
 ---
 
+## JARVIS 5.0 — O Learning OS
+
+> **Tema central:** O Jarvis deixa de ser um app de estudo e se torna um **sistema operacional de aprendizagem** — uma camada de inteligência que permeia toda a vida acadêmica e profissional do aluno. Não é mais sobre passar em provas. É sobre construir competência real e conectá-la com o mundo.
+
+**Pré-requisito:** 4.0 maduro com base de usuários ativa e dados pedagógicos robustos.
+**Estimativa:** 10–16 semanas. É a transformação de produto em plataforma.
+
+---
+
+### 5.0.1 — Social Learning Network: Inteligência Coletiva
+
+**O problema que resolve:** Até o 4.0, estudar é uma atividade solitária dentro do Jarvis. Mas aprendizagem é fundamentalmente social — grupos de estudo, monitoria, dúvidas compartilhadas, explicações entre colegas. O 5.0 conecta cérebros.
+
+**Como funciona:**
+
+Não é uma rede social genérica. É uma rede de aprendizagem onde cada conexão é mediada pelo knowledge graph e pelos dados de mastery. O Jarvis sabe exatamente quem pode ajudar quem.
+
+```
+Jarvis: "Você está travado em Epsilon-Delta há 3 dias.
+Encontrei 2 colegas que podem ajudar:
+
+👤 Ana (Turma 31) — dominou Epsilon-Delta semana passada.
+   A explicação que funcionou pra ela: analogia com intervalo
+   de tolerância em engenharia. Compatibilidade pedagógica: 87%.
+
+👤 Pedro (Turma 30) — teve o MESMO erro que você
+   (confundir ε com δ) e superou. Pode contar o que fez.
+   Compatibilidade: 79%.
+
+Quer que eu abra uma sessão de estudo colaborativa?"
+```
+
+**Matchmaking inteligente:**
+
+O Jarvis não conecta pessoas aleatoriamente. Ele calcula compatibilidade baseada em:
+
+```typescript
+interface StudyMatchScore {
+  // Complementaridade de conhecimento
+  knowledge_complementarity: number;
+  // Ana sabe o que Otávio não sabe, e vice-versa
+
+  // Similaridade de perfil cognitivo
+  cognitive_similarity: number;
+  // Se ambos aprendem melhor com exemplos visuais, vão se entender
+
+  // Histórico de erros compartilhados
+  shared_error_patterns: number;
+  // Quem superou o mesmo erro é o melhor professor
+
+  // Compatibilidade de horários
+  schedule_overlap: number;
+
+  // Rating de interações anteriores (se houver)
+  past_interaction_quality: number;
+}
+```
+
+**Modos de colaboração:**
+
+| Modo | Descrição | Mediação do Jarvis |
+|------|-----------|-------------------|
+| **Study Buddy** | Dois alunos estudam o mesmo tópico juntos | Jarvis gera exercícios pareados, cada um resolve e explica pro outro |
+| **Teach-to-Learn** | Aluno forte explica para aluno fraco | Jarvis avalia a explicação (Feynman mode) e dá crédito de mastery ao "professor" |
+| **Error Swap** | Alunos trocam seus erros mais comuns | Jarvis monta exercícios baseados nos erros do outro — perspectiva nova |
+| **Simulation Duel** | Dois alunos fazem o mesmo simulado simultaneamente | Ranking + análise comparativa pós-simulado |
+| **Knowledge Merge** | Alunos combinam suas notas sobre um tópico | Jarvis sintetiza as duas perspectivas numa nota mais completa |
+
+**O aluno que ensina também aprende:**
+
+```
+[Ana explica Epsilon-Delta para Otávio via Teach-to-Learn]
+
+Jarvis para Ana: "Sua explicação cobriu 85% dos conceitos-chave.
+Faltou mencionar que δ depende de ε (e não o contrário).
+Seu mastery em Epsilon-Delta subiu de 82% para 88% — ensinar
+consolidou seu conhecimento."
+
+Jarvis para Otávio: "Entendeu a explicação? Vou fazer
+3 perguntas para verificar."
+```
+
+**Implementação técnica:**
+
+```sql
+CREATE TABLE study_connections (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_a uuid REFERENCES auth.users(id),
+  user_b uuid REFERENCES auth.users(id),
+  connection_type text NOT NULL,     -- 'study_buddy', 'mentor_mentee', 'peer'
+  compatibility_score real,
+  topics_in_common text[],
+  created_at timestamptz DEFAULT now()
+);
+
+CREATE TABLE collaborative_sessions (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  session_type text NOT NULL,        -- 'teach_to_learn', 'study_buddy', 'simulation_duel', etc.
+  participants uuid[] NOT NULL,
+  topic_id text REFERENCES topics(id),
+  jarvis_mediation jsonb,            -- intervenções e avaliações do Jarvis
+  outcomes jsonb,                    -- mastery deltas para cada participante
+  quality_rating real,               -- rating mútuo
+  created_at timestamptz DEFAULT now()
+);
+
+-- Leaderboard ético: baseado em contribuição, não competição
+CREATE TABLE community_contribution (
+  user_id uuid REFERENCES auth.users(id) PRIMARY KEY,
+  explanations_given integer DEFAULT 0,
+  explanations_quality_avg real DEFAULT 0,
+  peers_helped integer DEFAULT 0,
+  knowledge_shared_topics text[],
+  contribution_score real DEFAULT 0   -- calculado por fórmula ponderada
+);
+```
+
+**Anti-padrão importante:** Isso NÃO é gamificação competitiva. O leaderboard mede *contribuição*, não *nota*. Quem mais ajuda os outros sobe no ranking — não quem tira a maior nota. Isso incentiva o comportamento certo.
+
+---
+
+### 5.0.2 — Real-World Bridge: Do Acadêmico ao Profissional
+
+**O problema que resolve:** O Jarvis até o 4.0 vive dentro do universo acadêmico — provas, notas, exercícios. Mas o aluno de CC está aprendendo pra construir coisas reais. Não existe ponte entre "dominar Grafos em Discreta" e "usar Grafos pra resolver um problema real de engenharia de software".
+
+**Como funciona:**
+
+O Jarvis conecta cada tópico acadêmico com aplicações reais no campo do aluno.
+
+```
+[Otávio domina Grafos em Matemática Discreta]
+
+Jarvis: "Você dominou Grafos. Esse conhecimento tem
+aplicação direta em:
+
+💻 Shortest Path em redes — algoritmo de Dijkstra
+   (base de GPS, roteamento de rede)
+💻 Dependency resolution — como o npm resolve pacotes
+   (é literalmente topological sort no DAG)
+💻 Social network analysis — como o Instagram sugere
+   quem seguir (grafos + BFS)
+
+Mini-projeto sugerido: implementar um resolver de
+dependências simples em TypeScript que recebe um
+package.json e retorna a ordem de instalação.
+
+Tempo estimado: 2h. Usa grafos + topological sort.
+Quer começar?"
+```
+
+**Modos de ponte:**
+
+```
+1. CONTEXT LINK
+   Após dominar tópico acadêmico, Jarvis mostra onde ele
+   aparece no mundo real com exemplos do campo do aluno.
+
+2. MINI-PROJECT
+   Projeto prático de 1-4h que aplica o conceito acadêmico
+   num cenário de engenharia de software real.
+
+3. INTERVIEW PREP
+   "Esse conceito aparece em entrevistas técnicas. Aqui está
+   um problema estilo LeetCode que usa exatamente isso."
+
+4. PAPER CONNECTION
+   "Esse conceito é base do paper 'PageRank: Bringing Order
+   to the Web' (1998). Quer um resumo de 5 minutos?"
+
+5. TOOL CONNECTION
+   "O PostgreSQL usa B-Trees (que você estudou em Estrutura
+   de Dados) para indexação. Quer entender como?"
+```
+
+**Implementação técnica:**
+
+```sql
+CREATE TABLE real_world_bridges (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  topic_id text REFERENCES topics(id),
+  bridge_type text NOT NULL,          -- 'application', 'mini_project', 'interview',
+                                      -- 'paper', 'tool'
+  title text NOT NULL,
+  description text NOT NULL,
+  difficulty text NOT NULL,           -- 'beginner', 'intermediate', 'advanced'
+  estimated_hours real,
+  field text NOT NULL,                -- 'software_engineering', 'data_science', etc.
+  prerequisites text[],               -- tópicos que o aluno precisa dominar
+  resources jsonb,                    -- links, papers, repositórios
+  created_at timestamptz DEFAULT now()
+);
+
+-- Gerado dinamicamente pelo Claude baseado no perfil do aluno
+-- e enriquecido com dados de múltiplos alunos ao longo do tempo
+```
+
+```typescript
+// src/lib/services/real-world-bridge.ts
+async function generateBridges(
+  topic: Topic,
+  studentProfile: LearnerProfile,
+  field: string  // do perfil do aluno (CC, Eng. Elétrica, etc.)
+): Promise<RealWorldBridge[]> {
+  // Claude gera pontes personalizadas:
+  // - Baseado no campo do aluno
+  // - Calibrado pelo mastery atual
+  // - Conectado com tópicos futuros do currículo
+  // - Referenciando ferramentas e tecnologias reais
+}
+```
+
+---
+
+### 5.0.3 — Career Intelligence: Jarvis como Conselheiro de Carreira
+
+**O problema que resolve:** O aluno de CC faz escolhas de carreira ao longo do curso — estágio, área de especialização, projetos pessoais, tecnologias para aprender. Essas escolhas são feitas quase que às cegas. O Jarvis tem dados sobre as competências do aluno e pode cruzar com dados do mercado.
+
+**Como funciona:**
+
+```
+Jarvis: "Análise de perfil de competências (fim do 1º semestre):
+
+🧮 Competências acadêmicas fortes:
+   - Lógica e raciocínio formal (mastery 89%)
+   - Pensamento algorítmico (mastery 82%)
+   - Resolução de problemas matemáticos (mastery 76%)
+
+💻 Afinidades detectadas pelos seus dados:
+   - Você rende mais em problemas que envolvem otimização
+   - Seus melhores momentos foram resolvendo problemas
+     de grafos e estruturas discretas
+   - Seu perfil cognitivo favorece pensamento sistemático
+
+📊 Áreas de CS que se alinham com seu perfil:
+   1. Backend Engineering / Systems — alta compatibilidade
+      (lógica + algoritmos + pensamento sistemático)
+   2. Data Engineering — média-alta compatibilidade
+      (matemática + otimização)
+   3. Competitive Programming — alta compatibilidade
+      (velocidade + resolução de problemas)
+
+🎯 Sugestão para o próximo semestre:
+   - Disciplinas: Estrutura de Dados (essencial) +
+     Programação Orientada a Objetos (base)
+   - Projeto pessoal: contribuir para um projeto open-source
+     que use grafos (ex: Neo4j, NetworkX)
+   - Preparação: começar LeetCode Easy em julho
+     (você já tem a base matemática)"
+```
+
+**O Jarvis cruza:**
+
+```typescript
+interface CareerIntelligence {
+  // Dados internos do aluno
+  academic_strengths: CompetencyScore[];
+  cognitive_profile: LearnerProfile;
+  interest_signals: InterestSignal[];     // tópicos onde o aluno gasta mais tempo voluntariamente
+  mini_project_performance: ProjectResult[];
+
+  // Dados externos (atualizados periodicamente)
+  market_demand: MarketData[];            // vagas, salários, tendências por área
+  curriculum_map: CurriculumPath[];       // disciplinas futuras e como se conectam
+  alumni_paths: AlumniCareerPath[];       // trajetórias de ex-alunos (anonimizadas)
+
+  // Outputs
+  career_alignment: CareerMatch[];
+  recommended_next_semester: CourseRecommendation[];
+  skill_gaps_for_target: SkillGap[];
+  project_suggestions: ProjectSuggestion[];
+}
+```
+
+**Implementação:**
+
+```sql
+CREATE TABLE career_profiles (
+  user_id uuid PRIMARY KEY REFERENCES auth.users(id),
+  competency_scores jsonb NOT NULL,       -- atualizado a cada mudança de mastery
+  interest_signals jsonb,                 -- inferido do comportamento
+  career_interests text[],               -- declarado pelo aluno
+  target_roles text[],                   -- ex: ['backend_engineer', 'data_engineer']
+  updated_at timestamptz DEFAULT now()
+);
+
+CREATE TABLE career_recommendations (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id uuid REFERENCES auth.users(id),
+  recommendation_type text NOT NULL,      -- 'course', 'project', 'skill', 'role', 'internship'
+  title text NOT NULL,
+  reasoning text NOT NULL,                -- por que essa recomendação
+  confidence real,
+  data_sources text[],                    -- quais dados fundamentam
+  is_acted_on boolean DEFAULT false,
+  created_at timestamptz DEFAULT now()
+);
+```
+
+---
+
+### 5.0.4 — Open Knowledge Protocol: Conhecimento que Transcende o App
+
+**O problema que resolve:** Todo o conhecimento gerado dentro do Jarvis — notas, flashcards, knowledge graphs, explicações que funcionaram — está preso dentro do app. Se o aluno trocar de ferramenta, perde tudo. E o conhecimento coletivo gerado por milhares de alunos estudando os mesmos tópicos morre dentro do banco de dados.
+
+**Como funciona:**
+
+O Jarvis implementa um protocolo aberto de exportação/importação de conhecimento.
+
+**Para o aluno individual:**
+
+```
+Jarvis: "Exportar seu conhecimento:
+
+📦 Export completo (Obsidian-compatible):
+   - 47 notas em Markdown com frontmatter
+   - 156 flashcards em formato Anki (.apkg)
+   - Knowledge graph em formato .json (importável no Obsidian Graph)
+   - Perfil cognitivo em .json (portável para outros sistemas)
+
+📦 Export seletivo:
+   - Apenas Cálculo I
+   - Apenas flashcards vencidos
+   - Apenas o knowledge graph
+
+Seus dados são seus. Sempre."
+```
+
+**Para a comunidade (opt-in):**
+
+```
+Jarvis: "Contribuir para o Knowledge Commons:
+
+Você pode compartilhar (anonimamente):
+✓ Suas melhores notas sobre Limites (rated 4.8/5 por peers)
+✓ O knowledge graph de Cálculo I (verificado por 12 alunos)
+✓ Seus flashcards de Composição de Funções (retenção média 91%)
+
+Em troca, você acessa:
+✓ O knowledge graph coletivo de Álgebra Linear
+  (construído por 340 alunos de 15 universidades)
+✓ As 10 melhores explicações de Epsilon-Delta
+  (ranqueadas por eficácia medida, não por likes)
+✓ Flashcard decks curados pela comunidade
+
+Contribuir? [Sim, anonimamente] [Escolher o que compartilhar] [Não]"
+```
+
+**O diferencial:** O ranking de conteúdo não é por popularidade — é por **eficácia medida**. Uma explicação que fez o mastery subir em 80% dos alunos que a leram é melhor que uma com 1000 likes. O Jarvis tem os dados para medir isso.
+
+**Implementação técnica:**
+
+```typescript
+// Open Knowledge Protocol
+interface KnowledgeExport {
+  format: 'obsidian' | 'anki' | 'json' | 'markdown';
+  scope: 'full' | 'discipline' | 'topic' | 'custom';
+  includes: {
+    notes: boolean;
+    flashcards: boolean;
+    knowledge_graph: boolean;
+    cognitive_profile: boolean;
+    study_history: boolean;       // anonimizado se compartilhado
+  };
+  privacy: 'private' | 'anonymous_community' | 'public';
+}
+
+// Knowledge Commons — conteúdo da comunidade
+interface KnowledgeCommons {
+  // Conteúdo ranqueado por eficácia, não popularidade
+  ranking_algorithm: {
+    primary: 'mastery_delta_after_consumption';  // quanto o mastery subiu
+    secondary: 'retention_7d_after_consumption'; // quanto reteve após 7 dias
+    tertiary: 'peer_rating';                     // rating de qualidade
+    anti_signal: 'time_spent';                   // tempo gasto ≠ qualidade
+  };
+}
+```
+
+```sql
+CREATE TABLE knowledge_commons (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  content_type text NOT NULL,            -- 'note', 'flashcard_deck', 'knowledge_graph',
+                                         -- 'explanation', 'exercise_set'
+  topic_canonical text NOT NULL,         -- tópico normalizado (ex: 'calculus.limits.epsilon_delta')
+  content jsonb NOT NULL,
+  contributor_id uuid,                   -- null se anônimo
+  university text,                       -- metadata opcional
+  effectiveness_score real,              -- calculado por medições reais
+  consumption_count integer DEFAULT 0,
+  mastery_delta_avg real,                -- média de melhora de mastery dos consumidores
+  retention_7d_avg real,                 -- retenção média 7 dias após consumo
+  created_at timestamptz DEFAULT now()
+);
+
+-- Garante que métricas de eficácia são calculadas, não self-reported
+CREATE TABLE knowledge_consumption_log (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  commons_item_id uuid REFERENCES knowledge_commons(id),
+  consumer_id uuid REFERENCES auth.users(id),
+  mastery_before real,
+  mastery_after real,                    -- medido 24h depois
+  retention_7d real,                     -- medido 7 dias depois
+  consumer_rating integer,              -- 1-5
+  created_at timestamptz DEFAULT now()
+);
+```
+
+---
+
+### 5.0.5 — Learning OS: Integrações que Fazem o Jarvis Onipresente
+
+**O problema que resolve:** O aluno vive em múltiplos ambientes — VS Code pra programar, Google Calendar pra horários, Notion/Obsidian pra notas pessoais, WhatsApp pra grupos de estudo, o portal da universidade pra notas oficiais. O Jarvis vive numa aba do browser. Para ser um verdadeiro OS de aprendizagem, ele precisa estar em todos esses contextos.
+
+**Integrações:**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    JARVIS LEARNING OS                            │
+│                                                                 │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐       │
+│  │ VS Code  │  │ Calendar │  │ Obsidian │  │ WhatsApp │       │
+│  │ Extension│  │  Sync    │  │  Plugin  │  │   Bot    │       │
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘       │
+│       │              │              │              │             │
+│       └──────────────┴──────┬───────┴──────────────┘             │
+│                             │                                    │
+│                    ┌────────▼────────┐                           │
+│                    │   JARVIS CORE   │                           │
+│                    │   (API Layer)   │                           │
+│                    └────────┬────────┘                           │
+│                             │                                    │
+│       ┌──────────────┬──────┴───────┬──────────────┐            │
+│  ┌────▼─────┐  ┌─────▼────┐  ┌─────▼────┐  ┌──────▼─────┐     │
+│  │ Browser  │  │  Chrome  │  │  Mobile  │  │  CLI Tool  │     │
+│  │Extension │  │  Tab     │  │  PWA     │  │  (terminal)│     │
+│  └──────────┘  └──────────┘  └──────────┘  └────────────┘     │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**VS Code Extension — Jarvis para Programação:**
+
+```
+[Otávio está programando em Python, escrevendo um sort]
+
+Jarvis (sidebar do VS Code): "Vejo que você está implementando
+um bubble sort. Esse algoritmo tem complexidade O(n²).
+
+Isso conecta com o tópico 'Complexidade' que você vai ver
+em Algoritmos no 2º semestre. Quer uma prévia de 2 minutos
+sobre Big-O enquanto o conceito está fresco?"
+
+[Otávio erra um off-by-one error]
+
+Jarvis: "Off-by-one em loop. Registrei como erro processual.
+Esse padrão apareceu 3x nas últimas 2 semanas. Dica: sempre
+verifique se o range inclui ou exclui o último elemento."
+```
+
+**Google Calendar Sync:**
+
+```typescript
+// Bidirecional:
+// Jarvis → Calendar: sessões de estudo planejadas aparecem no calendar
+// Calendar → Jarvis: mudanças de horário recalculam o plano
+
+interface CalendarSync {
+  study_sessions_to_calendar: boolean;     // sessões planejadas → eventos
+  exam_dates_to_calendar: boolean;         // provas → eventos com alertas
+  calendar_to_jarvis: boolean;             // compromissos → Jarvis ajusta plano
+  busy_time_detection: boolean;            // detecta horários ocupados automaticamente
+}
+```
+
+**WhatsApp Bot (ou Telegram):**
+
+```
+[Grupo de estudo no WhatsApp]
+
+Colega: "alguém sabe resolver aquele exercício 3 da lista de limites?"
+
+Jarvis Bot: "O exercício 3 pede lim(x→0) (1-cos(x))/x².
+Dica sem spoiler: use a identidade 1-cos(x) = 2sin²(x/2).
+Quer a resolução completa? Responde 'sim'."
+
+[Mensagem direta para o Jarvis Bot]
+
+Otávio: "estudei 30min de derivadas"
+
+Jarvis: "Registrado ✓ Sessão de 30min salva.
+Quer fazer 3 exercícios rápidos pra consolidar?"
+```
+
+**CLI Tool — Jarvis no Terminal:**
+
+```bash
+$ jarvis status
+┌─────────────────────────────────────┐
+│ P1 Cálculo: 15 dias · Readiness 48%│
+│ P1 Discreta: 19 dias · Readiness 61%│
+│ Flashcards vencidos: 7              │
+│ Streak: 5 dias 🔥                   │
+└─────────────────────────────────────┘
+
+$ jarvis study limits --time 30
+Starting study session: Cálculo de Limites (30 min)
+Exercise 1/6: lim(x→3) (x²-9)/(x-3) = ?
+> 6
+✅ Correct (12s)
+Exercise 2/6: ...
+
+$ jarvis capture "errei derivada de ln(x), confundi com 1/x²"
+Captured ✓ Error logged: Derivadas (processual — fórmula incorreta)
+```
+
+**Implementação — API Layer:**
+
+```typescript
+// src/app/api/v1/ — API pública RESTful
+
+// Endpoints para integrações externas:
+// POST /api/v1/capture          — Quick Capture universal
+// GET  /api/v1/status           — Status do aluno
+// GET  /api/v1/today            — Briefing do dia
+// POST /api/v1/session          — Registrar sessão de estudo
+// GET  /api/v1/flashcards/due   — Flashcards vencidos
+// POST /api/v1/flashcards/review — Registrar revisão
+// GET  /api/v1/exercises        — Próximos exercícios recomendados
+// POST /api/v1/exercises/submit — Submeter resposta
+// GET  /api/v1/graph            — Knowledge graph (JSON)
+// GET  /api/v1/export           — Export completo
+
+// Autenticação: API key por usuário
+// Rate limiting: 100 req/min
+// Webhooks: notificações para integrações
+```
+
+---
+
+### 5.0.6 — Institutional Intelligence: Jarvis para Universidades
+
+**O problema que resolve:** O Modo Professor do 4.0 é individual. O 5.0 escala isso para a instituição inteira. A universidade pode ter um painel de inteligência educacional que mostra padrões sistêmicos — não para vigiar alunos, mas para melhorar o ensino.
+
+**Dashboard institucional:**
+
+```
+PUCRS — Escola Politécnica — Painel de Inteligência Educacional
+
+📊 Semestre 2026/1 — Visão Geral
+
+Disciplinas com maior taxa de retenção abaixo do esperado:
+1. Cálculo I (Turmas 30-33) — 43% dos alunos abaixo de readiness 50%
+   Tópico crítico: Epsilon-Delta (89% dos alunos não tentam exercícios)
+   Recomendação: material complementar visual + mais exercícios guiados
+
+2. Física I (Turmas 20-22) — 38% abaixo de readiness 50%
+   Tópico crítico: Leis de Newton em 2D
+   Recomendação: simulações interativas + exercícios contextualizados
+
+Padrão cross-disciplina detectado:
+  Alunos que cursam Cálculo I + Física I simultaneamente
+  e dominam Funções em Cálculo rendem 34% melhor em
+  Cinemática em Física. Sugestão: sincronizar cronogramas.
+
+Evasão — sinais precoces detectados em 12 alunos:
+  - Sem login há 14+ dias
+  - Readiness < 30% em todas as disciplinas
+  - Padrão de queda consistente nas últimas 4 semanas
+  [Encaminhar para coordenação acadêmica]
+```
+
+**Ética e privacidade:**
+
+```typescript
+interface InstitutionalPolicy {
+  // REGRAS INVIOLÁVEIS
+  individual_data_visible: false;              // NUNCA dados individuais
+  minimum_aggregation_group: 10;               // mínimo 10 alunos por métrica
+  student_opt_in_required: true;               // aluno escolhe participar
+  evasion_alerts_require_consent: true;        // aluno autoriza alerta
+  data_used_for: 'improving_teaching_only';    // nunca para punição
+  retention_period_months: 24;                 // dados expiram
+  right_to_withdraw: 'immediate';             // aluno pode sair a qualquer momento
+}
+```
+
+---
+
+### 5.0.7 — Jarvis Research Mode: Do Estudo à Produção de Conhecimento
+
+**O problema que resolve:** Até o 4.0, o Jarvis ajuda a *consumir* conhecimento. Mas na universidade, especialmente a partir do 3º-4º semestre, o aluno começa a *produzir* conhecimento — trabalhos de conclusão, artigos, projetos de pesquisa. O Jarvis pode ser o copiloto de pesquisa.
+
+**Como funciona:**
+
+```
+[Otávio no 4º semestre, começando IC em Grafos]
+
+Jarvis: "Modo Pesquisa ativado para: 'Algoritmos de
+Detecção de Comunidades em Grafos Dinâmicos'
+
+📚 Literature Review assistido:
+   Encontrei 23 papers relevantes (2020-2026).
+   Organizei em 3 clusters temáticos:
+   1. Métodos espectrais (8 papers)
+   2. Label propagation (9 papers)
+   3. Deep learning em grafos (6 papers)
+
+   Cada cluster tem um resumo de 1 página +
+   knowledge graph dos conceitos-chave +
+   gaps identificados na literatura.
+
+🔬 Seu knowledge graph pessoal de Grafos (construído
+   desde o 1º semestre) já cobre 60% dos pré-requisitos.
+   Gaps para cobrir: Autovalores (Álgebra Linear) e
+   Graph Neural Networks.
+
+📝 Template de artigo configurado com:
+   - Normas ABNT/ACM (configurável)
+   - Bibliografia auto-gerenciada
+   - Citações inline assistidas"
+```
+
+**Research Pipeline:**
+
+```typescript
+interface ResearchMode {
+  // Fase 1: Exploração
+  literature_search: {
+    sources: ['arxiv', 'semantic_scholar', 'google_scholar'];
+    auto_summarize: boolean;
+    cluster_by_theme: boolean;
+    identify_gaps: boolean;
+    connect_to_personal_kg: boolean;  // ponte com o KG do aluno
+  };
+
+  // Fase 2: Organização
+  knowledge_management: {
+    annotation_system: boolean;       // anotar papers com highlights
+    concept_extraction: boolean;      // extrair conceitos → KG de pesquisa
+    citation_graph: boolean;          // visualizar quem cita quem
+    reading_queue: boolean;           // priorizado por relevância
+  };
+
+  // Fase 3: Produção
+  writing_assistant: {
+    outline_generation: boolean;
+    section_drafting: boolean;
+    citation_management: boolean;     // BibTeX auto-gerado
+    consistency_check: boolean;       // verifica coerência do argumento
+    formatting: 'abnt' | 'acm' | 'ieee' | 'custom';
+  };
+
+  // Fase 4: Revisão
+  peer_review_simulation: {
+    simulate_reviewer: boolean;       // Claude simula reviewer crítico
+    check_methodology: boolean;
+    verify_claims: boolean;
+    suggest_improvements: boolean;
+  };
+}
+```
+
+---
+
 ## Cronograma Consolidado
 
 ```
-                    MAR        ABR        MAI        JUN        JUL
-                    ├──────────┼──────────┼──────────┼──────────┤
-JARVIS 3.0          ██████████ ←── 6 ideias core (em andamento)
-                               │
-JARVIS 3.1                     ████████████
-                               │ Multimodal + Quick Capture
-                               │ Peer Teaching + Self-Analytics
-                               │                │
-JARVIS 3.2                                      ████████████
-                                                │ Cross-discipline
-                                                │ Adaptive Flow
-                                                │ Predictive Engine
-                                                │ Contextual Memory
-                                                │            │
-JARVIS 3.5                                                   ████████████ →→
-                                                             │ Multi-user
-                                                             │ Onboarding
-                                                             │ Plugins
-                                                             │ Mobile PWA
-                                                             │
-JARVIS 4.0                                                              ████████ →→→
-                                                                        │ Agente autônomo
-                                                                        │ Transfer learning
-                                                                        │ KG auto-evolution
-                                                                        │ Meta-otimização
-                                                                        │ Modo Professor
+              MAR    ABR    MAI    JUN    JUL    AGO    SET    OUT    NOV
+              ├──────┼──────┼──────┼──────┼──────┼──────┼──────┼──────┤
+JARVIS 3.0    ██████ ←── 6 ideias core
+                     │
+JARVIS 3.1           ████████
+                     │ Multimodal + Quick Capture
+                     │ Peer Teaching + Self-Analytics
+                     │          │
+JARVIS 3.2                     ████████
+                               │ Cross-discipline + Adaptive Flow
+                               │ Predictive Engine + Memory
+                               │          │
+JARVIS 3.5                                ██████████████
+                                          │ Multi-user + Auth + RLS
+                                          │ Onboarding + Plugins + PWA
+                                          │                │
+JARVIS 4.0                                                 ██████████████
+                                                           │ Agente autônomo
+                                                           │ Transfer + KG evolution
+                                                           │ Meta-otimização + Prof.
+                                                           │              │
+JARVIS 5.0                                                                ██████████████ →→
+                                                                          │ Social Learning
+                                                                          │ Real-World Bridge
+                                                                          │ Career Intelligence
+                                                                          │ Open Knowledge
+                                                                          │ Learning OS
+                                                                          │ Institutional
+                                                                          │ Research Mode
 ```
 
 ---
 
 ## Princípios de Evolução
 
-Cada versão segue três regras:
+Cada versão segue quatro regras:
 
-**1. Dados das versões anteriores alimentam as seguintes.** O Self-Analytics do 3.1 depende dos dados da Forgetting Curve do 3.0. A Predictive Engine do 3.2 depende dos dados do Self-Analytics. O Transfer Learning do 4.0 depende de tudo que veio antes. Nada é descartado — tudo acumula.
+**1. Dados das versões anteriores alimentam as seguintes.** O Self-Analytics do 3.1 depende dos dados da Forgetting Curve do 3.0. A Predictive Engine do 3.2 depende dos dados do Self-Analytics. O Transfer Learning do 4.0 depende de tudo que veio antes. O Social Learning do 5.0 multiplica o valor de tudo que cada aluno construiu individualmente. Nada é descartado — tudo acumula.
 
-**2. Complexidade interna, simplicidade externa.** Cada versão adiciona camadas de inteligência por baixo, mas a interface do aluno fica mais simples, não mais complexa. O Nível 4 de autonomia do 4.0 significa que o aluno faz *menos* — o Jarvis faz mais.
+**2. Complexidade interna, simplicidade externa.** Cada versão adiciona camadas de inteligência por baixo, mas a interface do aluno fica mais simples, não mais complexa. O Nível 4 de autonomia do 4.0 significa que o aluno faz *menos* — o Jarvis faz mais. O Learning OS do 5.0 significa que o aluno nem precisa abrir o app — o Jarvis está onde ele está.
 
-**3. O aluno sempre tem controle.** De autonomia Nível 1 a Nível 4, cada passo é opt-in. O aluno pode reverter qualquer ação autônoma. Transparência total — o Jarvis sempre explica o que fez e por quê.
+**3. O aluno sempre tem controle.** De autonomia Nível 1 a Nível 4, cada passo é opt-in. O aluno pode reverter qualquer ação autônoma. No 5.0, dados compartilhados são sempre opt-in e anonimizáveis. Transparência total — o Jarvis sempre explica o que fez e por quê.
+
+**4. Conhecimento é do aluno, não da plataforma.** O Open Knowledge Protocol do 5.0 garante que tudo que o aluno construiu é exportável, portável, e nunca fica preso. Se o aluno sair, leva tudo. Se ficar, contribui com a comunidade e recebe de volta.
 
 ---
 
-*"O 3.0 é o copiloto. O 4.0 é o segundo cérebro. A diferença é que o copiloto espera comandos — o segundo cérebro pensa junto com você."*
+## A Progressão Filosófica
 
-— Roadmap Jarvis 3.1→4.0, 27 de março de 2026
+```
+3.0  →  O Jarvis sabe o que você está fazendo.
+3.1  →  O Jarvis sente o que você está fazendo (por qualquer canal).
+3.2  →  O Jarvis pensa sobre como você pensa.
+3.5  →  O Jarvis funciona para qualquer pessoa.
+4.0  →  O Jarvis age sozinho enquanto você dorme.
+5.0  →  O Jarvis conecta seu conhecimento com o mundo.
+```
+
+*"O 3.0 é o copiloto. O 4.0 é o segundo cérebro. O 5.0 é o sistema nervoso de uma comunidade inteira de aprendizagem."*
+
+— Roadmap Jarvis 3.1→5.0, 27 de março de 2026

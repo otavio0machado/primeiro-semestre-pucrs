@@ -23,15 +23,34 @@ export async function POST() {
       return NextResponse.json({ error: 'Não autenticado' }, { status: 401 })
     }
 
-    // 1. Load user profile
-    const { data: profile } = await supabase
+    // 1. Load user profile (create if missing — handles edge cases from OAuth)
+    let { data: profile } = await supabase
       .from('user_profiles')
       .select('*')
       .eq('id', user.id)
       .single()
 
     if (!profile) {
-      return NextResponse.json({ error: 'Perfil não encontrado' }, { status: 404 })
+      const { data: newProfile, error: insertError } = await supabase
+        .from('user_profiles')
+        .insert({
+          id: user.id,
+          full_name: user.user_metadata?.full_name ?? user.email?.split('@')[0] ?? '',
+          university: '',
+          course: '',
+          total_semesters: 0,
+          current_semester: 1,
+          onboarding_completed: false,
+          onboarding_step: 'bootstrap',
+        })
+        .select()
+        .single()
+
+      if (insertError || !newProfile) {
+        console.error('Profile creation error:', insertError)
+        return NextResponse.json({ error: 'Não foi possível criar perfil' }, { status: 500 })
+      }
+      profile = newProfile
     }
 
     // 2. Load all processed documents

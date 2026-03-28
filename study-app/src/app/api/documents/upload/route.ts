@@ -36,13 +36,19 @@ export async function POST(request: Request) {
       'application/pdf',
       'application/vnd.openxmlformats-officedocument.presentationml.presentation',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'text/html',
+      'application/xhtml+xml',
       'image/png',
       'image/jpeg',
     ]
 
-    if (!allowedTypes.includes(file.type)) {
+    const ext = file.name.split('.').pop()?.toLowerCase()
+    const allowedExtensions = ['pdf', 'docx', 'pptx', 'html', 'htm', 'png', 'jpg', 'jpeg']
+    const isAllowed = allowedTypes.includes(file.type) || (ext && allowedExtensions.includes(ext))
+
+    if (!isAllowed) {
       return NextResponse.json(
-        { error: 'Tipo não suportado. Use PDF, DOCX, PPTX, PNG ou JPG.' },
+        { error: 'Tipo não suportado. Use PDF, DOCX, PPTX, HTML, PNG ou JPG.' },
         { status: 400 }
       )
     }
@@ -51,9 +57,54 @@ export async function POST(request: Request) {
     const timestamp = Date.now()
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
     const storagePath = `${user.id}/${source}/${timestamp}_${safeName}`
+    const isHtml = ext === 'html' || ext === 'htm'
 
-    // Upload to Supabase Storage
     const buffer = Buffer.from(await file.arrayBuffer())
+
+    // HTML files: skip Storage (Supabase blocks text/html), extract text and save directly
+    if (isHtml) {
+      const htmlContent = buffer.toString('utf-8')
+      const extractedText = htmlContent
+        .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+        .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#\d+;/g, '')
+        .replace(/\s{2,}/g, ' ')
+        .trim()
+
+      const { data: doc, error: dbError } = await supabase
+        .from('user_documents')
+        .insert({
+          user_id: user.id,
+          discipline_id: disciplineId || null,
+          file_name: file.name,
+          file_path: `inline:${storagePath}`,
+          file_size: file.size,
+          mime_type: 'text/html',
+          doc_type: 'other',
+          processing_status: 'indexed',
+          extracted_text: extractedText,
+          word_count: extractedText.split(/\s+/).filter(Boolean).length,
+          processed_at: new Date().toISOString(),
+          source,
+        })
+        .select('id, file_name, processing_status')
+        .single()
+
+      if (dbError) {
+        console.error('DB insert error (HTML):', dbError)
+        return NextResponse.json({ error: 'Erro ao registrar documento' }, { status: 500 })
+      }
+
+      return NextResponse.json({ ok: true, document: doc })
+    }
+
+    // Non-HTML: upload to Supabase Storage
     const { error: uploadError } = await supabase.storage
       .from('user-documents')
       .upload(storagePath, buffer, {
@@ -88,7 +139,6 @@ export async function POST(request: Request) {
 
     if (dbError) {
       console.error('DB insert error:', dbError)
-      // Try to clean up the uploaded file
       await supabase.storage.from('user-documents').remove([storagePath])
       return NextResponse.json(
         { error: 'Erro ao registrar documento' },

@@ -41,24 +41,8 @@ export async function updateSession(request: NextRequest) {
     path.startsWith('/auth/')
 
   if (isPublicRoute) {
-    if (user) {
-      // Already logged in — check onboarding status
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('onboarding_completed')
-        .eq('id', user.id)
-        .single()
-
-      if (!profile?.onboarding_completed) {
-        const url = request.nextUrl.clone()
-        url.pathname = '/onboarding/intro'
-        return NextResponse.redirect(url)
-      }
-
-      const url = request.nextUrl.clone()
-      url.pathname = '/dashboard'
-      return NextResponse.redirect(url)
-    }
+    // Public routes are always accessible, even if logged in.
+    // This lets users visit landing, login, or registro freely.
     return supabaseResponse
   }
 

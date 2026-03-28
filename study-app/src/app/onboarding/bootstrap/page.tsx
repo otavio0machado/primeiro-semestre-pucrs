@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -42,6 +42,19 @@ interface BootstrapData {
   hasLegacyData?: boolean;
 }
 
+const PROGRESS_MESSAGES = [
+  "Lendo seus documentos...",
+  "Identificando disciplinas...",
+  "Mapeando topicos e pre-requisitos...",
+  "Analisando planos de ensino...",
+  "Criando estrutura do curriculo...",
+  "Gerando modulos e topicos...",
+  "Montando grafo de conhecimento...",
+  "Calculando dificuldades...",
+  "Criando flashcards iniciais...",
+  "Quase pronto...",
+];
+
 export default function OnboardingBootstrapPage() {
   const router = useRouter();
   const [phase, setPhase] = useState<BootstrapPhase>("idle");
@@ -49,17 +62,46 @@ export default function OnboardingBootstrapPage() {
   const [statusText, setStatusText] = useState("");
   const [data, setData] = useState<BootstrapData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const progressInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const startProgressAnimation = useCallback(() => {
+    let tick = 0;
+    setProgress(5);
+    setStatusText(PROGRESS_MESSAGES[0]);
+
+    progressInterval.current = setInterval(() => {
+      tick++;
+      setElapsedSeconds(tick);
+
+      // Smooth progress: fast at start, slows down approaching 85%
+      setProgress((prev) => {
+        if (prev >= 85) return prev; // Cap at 85% until real completion
+        const increment = prev < 30 ? 3 : prev < 60 ? 1.5 : 0.5;
+        return Math.min(85, prev + increment);
+      });
+
+      // Rotate status messages every 4 seconds
+      const msgIndex = Math.min(
+        Math.floor(tick / 4),
+        PROGRESS_MESSAGES.length - 1
+      );
+      setStatusText(PROGRESS_MESSAGES[msgIndex]);
+    }, 1000);
+  }, []);
+
+  const stopProgressAnimation = useCallback(() => {
+    if (progressInterval.current) {
+      clearInterval(progressInterval.current);
+      progressInterval.current = null;
+    }
+  }, []);
 
   async function runBootstrap() {
-    setPhase("loading_docs");
-    setProgress(10);
-    setStatusText("Carregando documentos processados...");
+    setPhase("generating");
+    startProgressAnimation();
 
     try {
-      setPhase("generating");
-      setProgress(30);
-      setStatusText("Jarvis esta analisando seus materiais e gerando o curriculo...");
-
       const res = await fetch("/api/onboarding/bootstrap", { method: "POST" });
 
       if (!res.ok) {
@@ -67,9 +109,10 @@ export default function OnboardingBootstrapPage() {
         throw new Error(err.error || "Erro no bootstrap");
       }
 
-      setProgress(80);
-      setStatusText("Populando banco de dados...");
+      stopProgressAnimation();
+      setProgress(90);
       setPhase("populating");
+      setStatusText("Finalizando...");
 
       const result = await res.json();
 
@@ -81,6 +124,7 @@ export default function OnboardingBootstrapPage() {
       });
       setPhase("review");
     } catch (e) {
+      stopProgressAnimation();
       setError((e as Error).message);
       setPhase("error");
     }
@@ -95,7 +139,6 @@ export default function OnboardingBootstrapPage() {
     } = await supabase.auth.getUser();
 
     if (user) {
-      // Claim legacy data if any
       await fetch("/api/admin/claim-legacy-data", { method: "POST" }).catch(
         () => {}
       );
@@ -113,15 +156,18 @@ export default function OnboardingBootstrapPage() {
     router.refresh();
   }
 
-  // Auto-start on mount
+  // Auto-start on mount (guard against React strict mode double-invoke)
+  const hasStarted = useRef(false);
   useEffect(() => {
-    if (phase === "idle") {
+    if (phase === "idle" && !hasStarted.current) {
+      hasStarted.current = true;
       runBootstrap();
     }
+    return () => stopProgressAnimation();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Progress animation
+  // Loading / generating state
   if (phase !== "review" && phase !== "done" && phase !== "error") {
     return (
       <div className="space-y-8 text-center">
@@ -143,32 +189,42 @@ export default function OnboardingBootstrapPage() {
               style={{ width: `${progress}%` }}
             />
           </div>
-          <p className="mt-2 text-xs text-fg-muted">{progress}%</p>
+          <div className="mt-2 flex justify-between text-xs text-fg-muted">
+            <span>{Math.round(progress)}%</span>
+            <span>{elapsedSeconds}s</span>
+          </div>
         </div>
 
         {/* Steps */}
         <div className="space-y-3 text-left max-w-md mx-auto">
           <StepItem
-            label="Documentos lidos e classificados"
-            done={progress >= 20}
-            active={phase === "loading_docs"}
+            label="Lendo e classificando documentos"
+            done={progress >= 15}
+            active={progress < 15}
           />
           <StepItem
-            label="Gerando curriculo personalizado"
+            label="Gerando curriculo com IA"
             done={progress >= 60}
-            active={phase === "generating"}
+            active={progress >= 15 && progress < 60}
           />
           <StepItem
-            label="Populando sistema com dados"
-            done={progress >= 90}
-            active={phase === "populating"}
+            label="Criando topicos e grafo de conhecimento"
+            done={progress >= 80}
+            active={progress >= 60 && progress < 80}
           />
           <StepItem
             label="Gerando flashcards iniciais"
-            done={progress >= 100}
-            active={false}
+            done={progress >= 95}
+            active={progress >= 80 && progress < 95}
           />
         </div>
+
+        {/* Hint after 15s */}
+        {elapsedSeconds >= 15 && (
+          <p className="text-xs text-fg-muted max-w-sm mx-auto animate-fadeIn">
+            A IA esta analisando seus materiais com cuidado — isso pode levar ate 60 segundos.
+          </p>
+        )}
       </div>
     );
   }
@@ -191,6 +247,8 @@ export default function OnboardingBootstrapPage() {
             onClick={() => {
               setError(null);
               setPhase("idle");
+              setElapsedSeconds(0);
+              setProgress(0);
               runBootstrap();
             }}
             className="rounded-xl border border-border-default px-6 py-3 text-sm font-medium text-fg-secondary hover:bg-bg-secondary"
