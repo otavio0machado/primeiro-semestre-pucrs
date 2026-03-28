@@ -500,7 +500,7 @@ export async function orchestrateStream(
   let response: import('./types').ProviderResponse
 
   if (modelInfo.provider === 'anthropic') {
-    response = await streamClaude(model, {
+    response = await streamClaude(resolvedModel, {
       systemPrompt,
       messages: conversationMessages,
       tools: providerTools,
@@ -509,7 +509,7 @@ export async function orchestrateStream(
     }, onDelta)
   } else {
     // Gemini doesn't support streaming in our implementation yet — fall back
-    response = await (await import('./providers/gemini')).callGemini(model, {
+    response = await (await import('./providers/gemini')).callGemini(resolvedModel, {
       systemPrompt,
       messages: conversationMessages,
       tools: providerTools,
@@ -545,14 +545,14 @@ export async function orchestrateStream(
     let followUp: import('./types').ProviderResponse
 
     if (modelInfo.provider === 'anthropic') {
-      followUp = await streamClaude(model, {
+      followUp = await streamClaude(resolvedModel, {
         systemPrompt,
         messages: followUpMessages,
         maxTokens: modelInfo.maxTokens,
         temperature: 0.4,
       }, onDelta)
     } else {
-      followUp = await (await import('./providers/gemini')).callGemini(model, {
+      followUp = await (await import('./providers/gemini')).callGemini(resolvedModel, {
         systemPrompt,
         messages: followUpMessages,
         maxTokens: modelInfo.maxTokens,
@@ -583,7 +583,7 @@ export async function orchestrateStream(
     estimatedCostUsd: totalCost,
   })
 
-  await logUsage(model, response.usage.inputTokens, response.usage.outputTokens, totalCost, response.durationMs)
+  await logUsage(resolvedModel, response.usage.inputTokens, response.usage.outputTokens, totalCost, response.durationMs)
 }
 
 // ── Usage Logging ───────────────────────────────────────────

@@ -115,6 +115,7 @@ function normalizeQuadrantChart(raw: string) {
 function normalizeXyChart(raw: string) {
   const lines = extractFromFirstStarter(raw).split("\n");
   const result: string[] = [];
+  let hasData = false;
 
   for (const line of lines) {
     const trimmed = line.trim();
@@ -131,8 +132,9 @@ function normalizeXyChart(raw: string) {
 
     if (
       /^(title|x-axis|y-axis)\s+/.test(trimmed) ||
-      /^(line|bar)\s+\[.*\]$/.test(trimmed)
+      /^(line|bar)\s+\[/.test(trimmed)
     ) {
+      if (/^(line|bar)\s+\[/.test(trimmed)) hasData = true;
       result.push(`    ${trimmed}`);
       continue;
     }
@@ -140,6 +142,11 @@ function normalizeXyChart(raw: string) {
     if (isLikelyNarrativeLine(trimmed)) {
       break;
     }
+  }
+
+  // xychart without data (line/bar) will crash mermaid — add a placeholder
+  if (!hasData) {
+    result.push("    line [0, 0]");
   }
 
   return result.join("\n").trim();

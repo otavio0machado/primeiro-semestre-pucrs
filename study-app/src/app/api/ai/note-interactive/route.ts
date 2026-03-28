@@ -8,7 +8,7 @@ function clampHeight(value: number) {
 
 function validate(body: unknown): GenerateNoteInteractiveInput | null {
   const b = body as Record<string, unknown>;
-  if (!b.request || !b.noteContent) return null;
+  if (!b.request || typeof b.noteContent !== "string") return null;
 
   return {
     request: String(b.request),

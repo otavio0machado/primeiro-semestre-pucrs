@@ -1,7 +1,7 @@
 "use client";
 
-import { Copy, GripVertical, Smartphone, Trash2, Monitor } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { Copy, GripVertical, Smartphone, Trash2, Monitor, Code2, Eye, Columns2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import {
   type InteractiveBlockFrame,
   type RenderableBlockMode,
@@ -44,12 +44,13 @@ export function InteractiveNoteBlock({
 }) {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
     const textarea = textareaRef.current;
     if (!textarea) return;
     textarea.style.height = "0px";
-    textarea.style.height = `${Math.max(260, textarea.scrollHeight)}px`;
+    textarea.style.height = `${Math.max(200, textarea.scrollHeight)}px`;
   }, [code, mode]);
 
   function startResize(event: React.PointerEvent<HTMLButtonElement>) {
@@ -82,78 +83,114 @@ export function InteractiveNoteBlock({
       ref={wrapperRef}
       style={{ width: `${width}%` }}
       className={cn(
-        "group relative max-w-full transition-[width,opacity] duration-200",
+        "group/block relative max-w-full transition-[width,opacity] duration-200",
         dragging && "opacity-40",
       )}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
-      <div className="overflow-hidden rounded-3xl border border-border-default bg-bg-primary shadow-[var(--note-block-shadow)]">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border-default/70 px-4 py-3">
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              draggable
-              onDragStart={onDragStart}
-              onDragEnd={onDragEnd}
-              className="cursor-grab rounded-xl border border-border-default bg-bg-surface p-2 text-fg-muted transition-colors hover:text-fg-primary active:cursor-grabbing"
-              aria-label="Arrastar bloco"
-            >
-              <GripVertical className="h-4 w-4" />
-            </button>
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-fg-muted">
-                Bloco interativo
-              </p>
-              <p className="text-sm font-medium text-fg-primary">{title}</p>
-            </div>
-          </div>
+      {/* Floating compact toolbar — visible on hover */}
+      <div
+        className={cn(
+          "absolute -top-3 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1 rounded-xl border border-border-default/60 bg-bg-primary/95 px-2 py-1 shadow-lg backdrop-blur-sm transition-all duration-200",
+          hovered || mode === "editor"
+            ? "pointer-events-auto translate-y-0 opacity-100"
+            : "pointer-events-none translate-y-1 opacity-0",
+        )}
+      >
+        <button
+          type="button"
+          draggable
+          onDragStart={onDragStart}
+          onDragEnd={onDragEnd}
+          className="cursor-grab rounded-lg p-1.5 text-fg-muted transition-colors hover:bg-bg-secondary hover:text-fg-primary active:cursor-grabbing"
+          aria-label="Arrastar bloco"
+        >
+          <GripVertical className="h-3.5 w-3.5" />
+        </button>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <FrameButton
-              active={frame === "phone"}
-              onClick={() => onFrameChange("phone")}
-            >
-              <Smartphone className="h-3.5 w-3.5" />
-              Celular
-            </FrameButton>
-            <FrameButton
-              active={frame === "canvas"}
-              onClick={() => onFrameChange("canvas")}
-            >
-              <Monitor className="h-3.5 w-3.5" />
-              Canvas
-            </FrameButton>
-            <ModeButton active={mode === "editor"} onClick={() => onModeChange("editor")}>
-              Editor
-            </ModeButton>
-            <ModeButton active={mode === "split"} onClick={() => onModeChange("split")}>
-              Split
-            </ModeButton>
-            <ModeButton active={mode === "render"} onClick={() => onModeChange("render")}>
-              Render
-            </ModeButton>
-            <button
-              type="button"
-              onClick={onCopy}
-              className="rounded-xl border border-border-default bg-bg-surface px-3 py-2 text-xs text-fg-secondary transition-colors hover:bg-bg-secondary hover:text-fg-primary"
-            >
-              <span className="flex items-center gap-2">
-                <Copy className="h-3.5 w-3.5" />
-                Copiar
-              </span>
-            </button>
-            <button
-              type="button"
-              onClick={onDelete}
-              className="rounded-xl border border-accent-danger/25 px-3 py-2 text-xs text-accent-danger transition-colors hover:bg-accent-danger/10"
-            >
-              <span className="flex items-center gap-2">
-                <Trash2 className="h-3.5 w-3.5" />
-                Remover
-              </span>
-            </button>
-          </div>
-        </div>
+        <div className="mx-0.5 h-4 w-px bg-border-default/50" />
 
+        {/* Frame toggles */}
+        <FrameIcon
+          active={frame === "phone"}
+          onClick={() => onFrameChange("phone")}
+          title="Celular"
+        >
+          <Smartphone className="h-3.5 w-3.5" />
+        </FrameIcon>
+        <FrameIcon
+          active={frame === "canvas"}
+          onClick={() => onFrameChange("canvas")}
+          title="Canvas"
+        >
+          <Monitor className="h-3.5 w-3.5" />
+        </FrameIcon>
+
+        <div className="mx-0.5 h-4 w-px bg-border-default/50" />
+
+        {/* Mode toggles */}
+        <ModeIcon
+          active={mode === "editor"}
+          onClick={() => onModeChange("editor")}
+          title="Editor"
+        >
+          <Code2 className="h-3.5 w-3.5" />
+        </ModeIcon>
+        <ModeIcon
+          active={mode === "split"}
+          onClick={() => onModeChange("split")}
+          title="Split"
+        >
+          <Columns2 className="h-3.5 w-3.5" />
+        </ModeIcon>
+        <ModeIcon
+          active={mode === "render"}
+          onClick={() => onModeChange("render")}
+          title="Render"
+        >
+          <Eye className="h-3.5 w-3.5" />
+        </ModeIcon>
+
+        <div className="mx-0.5 h-4 w-px bg-border-default/50" />
+
+        <button
+          type="button"
+          onClick={onCopy}
+          className="rounded-lg p-1.5 text-fg-muted transition-colors hover:bg-bg-secondary hover:text-fg-primary"
+          title="Copiar"
+        >
+          <Copy className="h-3.5 w-3.5" />
+        </button>
+        <button
+          type="button"
+          onClick={onDelete}
+          className="rounded-lg p-1.5 text-fg-muted transition-colors hover:bg-accent-danger/10 hover:text-accent-danger"
+          title="Remover"
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
+
+        {/* Title label */}
+        {title && (
+          <>
+            <div className="mx-0.5 h-4 w-px bg-border-default/50" />
+            <span className="max-w-[140px] truncate px-1 text-[11px] text-fg-muted">
+              {title}
+            </span>
+          </>
+        )}
+      </div>
+
+      {/* Content area — minimal border, blends with note */}
+      <div
+        className={cn(
+          "overflow-hidden rounded-2xl transition-all duration-200",
+          hovered
+            ? "border border-border-default/60 bg-bg-surface/30 shadow-sm"
+            : "border border-transparent bg-transparent",
+        )}
+      >
         <div
           className={cn(
             "grid gap-0",
@@ -161,20 +198,23 @@ export function InteractiveNoteBlock({
           )}
         >
           {showEditor && (
-            <div className={cn(showRender && "border-b border-border-default/70 xl:border-b-0 xl:border-r")}>
+            <div className={cn(
+              showRender && "border-b border-border-default/40 xl:border-b-0 xl:border-r",
+            )}>
               <textarea
                 ref={textareaRef}
                 value={code}
                 onChange={(event) => onCodeChange(event.target.value)}
-                rows={12}
+                rows={10}
                 spellCheck={false}
-                className="min-h-[320px] w-full resize-none bg-transparent px-5 py-4 font-mono text-sm leading-7 text-fg-primary outline-none"
+                className="min-h-[200px] w-full resize-none bg-transparent px-4 py-3 font-mono text-sm leading-7 text-fg-primary outline-none placeholder:text-fg-muted"
+                placeholder="HTML/CSS/JS..."
               />
             </div>
           )}
 
           {showRender && (
-            <div className="min-w-0 bg-bg-surface/40 p-4">
+            <div className="min-w-0 p-3">
               <InteractiveArtifactPreview
                 html={code}
                 frame={frame}
@@ -186,34 +226,41 @@ export function InteractiveNoteBlock({
         </div>
       </div>
 
+      {/* Resize handle */}
       <button
         type="button"
         onPointerDown={startResize}
-        className="absolute bottom-4 right-4 h-10 w-3 cursor-ew-resize rounded-full bg-border-default/70 opacity-0 transition-opacity group-hover:opacity-100"
+        className={cn(
+          "absolute bottom-3 right-2 h-8 w-2 cursor-ew-resize rounded-full bg-border-default/50 transition-opacity",
+          hovered ? "opacity-60" : "opacity-0",
+        )}
         aria-label="Redimensionar bloco"
       />
     </div>
   );
 }
 
-function ModeButton({
+function ModeIcon({
   active,
   children,
   onClick,
+  title,
 }: {
   active: boolean;
   children: React.ReactNode;
   onClick: () => void;
+  title: string;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      title={title}
       className={cn(
-        "rounded-xl border px-3 py-2 text-xs transition-colors",
+        "rounded-lg p-1.5 transition-colors",
         active
-          ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
-          : "border-border-default bg-bg-surface text-fg-secondary hover:bg-bg-secondary hover:text-fg-primary",
+          ? "bg-accent-primary/15 text-accent-primary"
+          : "text-fg-muted hover:bg-bg-secondary hover:text-fg-primary",
       )}
     >
       {children}
@@ -221,27 +268,30 @@ function ModeButton({
   );
 }
 
-function FrameButton({
+function FrameIcon({
   active,
   children,
   onClick,
+  title,
 }: {
   active: boolean;
   children: React.ReactNode;
   onClick: () => void;
+  title: string;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      title={title}
       className={cn(
-        "rounded-xl border px-3 py-2 text-xs transition-colors",
+        "rounded-lg p-1.5 transition-colors",
         active
-          ? "border-emerald-400/50 bg-emerald-400/10 text-emerald-200"
-          : "border-border-default bg-bg-surface text-fg-secondary hover:bg-bg-secondary hover:text-fg-primary",
+          ? "bg-emerald-400/15 text-emerald-300"
+          : "text-fg-muted hover:bg-bg-secondary hover:text-fg-primary",
       )}
     >
-      <span className="flex items-center gap-2">{children}</span>
+      {children}
     </button>
   );
 }

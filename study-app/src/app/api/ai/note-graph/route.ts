@@ -5,7 +5,7 @@ import { normalizeMermaidChart } from "@/lib/notes/mermaid";
 
 function validate(body: unknown): GenerateNoteGraphInput | null {
   const b = body as Record<string, unknown>;
-  if (!b.request || !b.noteContent || !b.graphType) return null;
+  if (!b.request || typeof b.noteContent !== "string" || !b.graphType) return null;
 
   return {
     graphType: b.graphType as GenerateNoteGraphInput["graphType"],
